@@ -19,13 +19,15 @@
 
 ---
 
-## 🚀 Quick Download
+## 🚀 Quick Download & Install
 
-Download the latest standalone executable bundle for Windows:
+Choose how you want to use VoiceToText Pro:
 
-➡️ **[Download VoiceToText Pro v2.0.0 (win-x64.zip)](https://github.com/yekaweb/VoiceToTextPro/releases/latest)**
+1. 📥 **[Download Installer Setup (`VoiceToTextPro_Setup_v2.0.0.exe`)](https://github.com/yekaweb/VoiceToTextPro/releases/download/v2.0.0/VoiceToTextPro_Setup_v2.0.0.exe)**
+   - *Standard Windows installer. Automatically installs to Program Files, creates Start Menu & Desktop shortcuts, and includes an uninstaller.*
 
-*No .NET installation required. Extract and run `VoiceToTextPro.exe`.*
+2. 📦 **[Download Portable Edition (`VoiceToTextPro_v2.0.0_win-x64.zip`)](https://github.com/yekaweb/VoiceToTextPro/releases/download/v2.0.0/VoiceToTextPro_v2.0.0_win-x64.zip)**
+   - *Standalone ZIP file. Extract anywhere and launch directly without installation.*
 
 ---
 

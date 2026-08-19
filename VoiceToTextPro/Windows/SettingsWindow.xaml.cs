@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Windows;
 using Microsoft.Win32;
@@ -184,6 +185,22 @@ namespace VoiceToTextPro.Windows
         {
             DialogResult = false;
             Close();
+        }
+
+        private void GetGeminiApiKey_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                Process.Start(new ProcessStartInfo
+                {
+                    FileName = "https://aistudio.google.com/app/apikey",
+                    UseShellExecute = true
+                });
+            }
+            catch (Exception ex)
+            {
+                LoggerService.ErrorLocalized("Log_SETTINGS_UI_GeminiLink", "خطا در باز کردن لینک کلید API: {0}", "SETTINGS_UI", ex.Message);
+            }
         }
     }
 }

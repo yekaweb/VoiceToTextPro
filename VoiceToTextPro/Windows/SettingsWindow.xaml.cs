@@ -2,6 +2,7 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Windows;
+using System.Windows.Controls;
 using Microsoft.Win32;
 using VoiceToTextPro.Services;
 
@@ -51,12 +52,24 @@ namespace VoiceToTextPro.Windows
 
                 // Load Gemini Settings
                 GeminiApiKeyTxt.Text = settings.GeminiApiKey;
-                GeminiModelCombo.SelectedIndex = settings.GeminiModel switch
+                bool foundModel = false;
+                for (int i = 0; i < GeminiModelCombo.Items.Count; i++)
                 {
-                    "gemini-1.5-pro" => 1,
-                    "gemini-1.5-flash" => 2,
-                    _ => 0 // Default: gemini-2.0-flash
-                };
+                    if (GeminiModelCombo.Items[i] is ComboBoxItem item && 
+                        (item.Content?.ToString()?.Contains(settings.GeminiModel, StringComparison.OrdinalIgnoreCase) == true ||
+                         item.Tag?.ToString()?.Equals(settings.GeminiModel, StringComparison.OrdinalIgnoreCase) == true))
+                    {
+                        GeminiModelCombo.SelectedIndex = i;
+                        foundModel = true;
+                        break;
+                    }
+                }
+                if (!foundModel && !string.IsNullOrWhiteSpace(settings.GeminiModel))
+                {
+                    var customItem = new ComboBoxItem { Content = settings.GeminiModel, Tag = settings.GeminiModel, IsSelected = true };
+                    GeminiModelCombo.Items.Add(customItem);
+                    GeminiModelCombo.SelectedItem = customItem;
+                }
             }
             catch (Exception ex)
             {
@@ -159,12 +172,17 @@ namespace VoiceToTextPro.Windows
 
                 // Save Gemini Settings
                 settings.GeminiApiKey = GeminiApiKeyTxt.Text.Trim();
-                settings.GeminiModel = GeminiModelCombo.SelectedIndex switch
+                if (GeminiModelCombo.SelectedItem is ComboBoxItem selectedComboItem)
                 {
-                    1 => "gemini-1.5-pro",
-                    2 => "gemini-1.5-flash",
-                    _ => "gemini-2.0-flash"
-                };
+                    string modelName = selectedComboItem.Tag?.ToString() ?? selectedComboItem.Content?.ToString() ?? "gemini-2.0-flash";
+                    // Clean up display names if needed
+                    if (modelName.Contains(" (")) modelName = modelName.Substring(0, modelName.IndexOf(" ("));
+                    settings.GeminiModel = modelName.Trim();
+                }
+                else if (GeminiModelCombo.SelectedItem != null)
+                {
+                    settings.GeminiModel = GeminiModelCombo.SelectedItem.ToString() ?? "gemini-2.0-flash";
+                }
 
                 // Save to appsettings.json
                 settings.Save();
@@ -200,6 +218,61 @@ namespace VoiceToTextPro.Windows
             catch (Exception ex)
             {
                 LoggerService.ErrorLocalized("Log_SETTINGS_UI_GeminiLink", "خطا در باز کردن لینک کلید API: {0}", "SETTINGS_UI", ex.Message);
+            }
+        }
+
+        private async void TestGemini_Click(object sender, RoutedEventArgs e)
+        {
+            string key = GeminiApiKeyTxt.Text.Trim();
+            if (string.IsNullOrWhiteSpace(key))
+            {
+                ModernDialogService.ShowWarning("لطفاً ابتدا کلید Gemini API Key خود را وارد کنید.", "کلید خالی است");
+                return;
+            }
+
+            try
+            {
+                TestGeminiBtn.IsEnabled = false;
+                GeminiTestStatusTxt.Visibility = Visibility.Visible;
+                GeminiTestStatusTxt.Foreground = new System.Windows.Media.SolidColorBrush((System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#FBBF24"));
+                GeminiTestStatusTxt.Text = "⏳ در حال برقراری اتصال و استعلام مدل‌های فعال از Google AI Studio...";
+
+                var models = await GeminiApiClient.Instance.FetchAvailableModelsAsync(key);
+
+                GeminiModelCombo.Items.Clear();
+                int selectedIndex = 0;
+                string currentSavedModel = AppSettings.Instance.GeminiModel;
+
+                for (int i = 0; i < models.Count; i++)
+                {
+                    string m = models[i];
+                    var item = new ComboBoxItem { Content = m, Tag = m };
+                    GeminiModelCombo.Items.Add(item);
+
+                    if (m.Equals(currentSavedModel, StringComparison.OrdinalIgnoreCase))
+                    {
+                        selectedIndex = i;
+                    }
+                }
+
+                if (GeminiModelCombo.Items.Count > 0)
+                {
+                    GeminiModelCombo.SelectedIndex = selectedIndex;
+                }
+
+                GeminiTestStatusTxt.Foreground = new System.Windows.Media.SolidColorBrush((System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#34D399"));
+                GeminiTestStatusTxt.Text = $"✅ اتصال با موفقیت برقرار گردید! {models.Count} مدل فعال دریافت شد.";
+                ModernDialogService.ShowInfo($"🎉 اتصال به Google Gemini API برقرار گردید!\n\nتعداد {models.Count} مدل هوش مصنوعی فعال و آماده استفاده در اکانت شما بارگذاری شد.", "تست اتصال موفق");
+            }
+            catch (Exception ex)
+            {
+                GeminiTestStatusTxt.Foreground = new System.Windows.Media.SolidColorBrush((System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#F87171"));
+                GeminiTestStatusTxt.Text = $"❌ خطا در اتصال: {ex.Message}";
+                ModernDialogService.ShowError($"خطا در تست اتصال با کلید API ارائه شده:\n\n{ex.Message}", "خطای اتصال Gemini");
+            }
+            finally
+            {
+                TestGeminiBtn.IsEnabled = true;
             }
         }
     }

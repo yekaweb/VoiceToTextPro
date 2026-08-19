@@ -23,6 +23,59 @@ namespace VoiceToTextPro.Services
             }
         }
 
+        public async Task<System.Collections.Generic.List<string>> FetchAvailableModelsAsync(string apiKey)
+        {
+            if (string.IsNullOrWhiteSpace(apiKey))
+            {
+                throw new ArgumentException("کلید API نمی‌تواند خالی باشد.");
+            }
+
+            string url = $"https://generativelanguage.googleapis.com/v1beta/models?key={apiKey}";
+            LoggerService.Info("در حال استعلام لیست مدل‌های فعال از Google Gemini API...", "GEMINI_AI");
+
+            var response = await _httpClient.GetAsync(url);
+            string responseBody = await response.Content.ReadAsStringAsync();
+
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new HttpRequestException($"خطا در برقراری ارتباط با Google Gemini API [{response.StatusCode}]:\n{ParseErrorMessage(responseBody)}");
+            }
+
+            var result = new System.Collections.Generic.List<string>();
+            try
+            {
+                var jo = JObject.Parse(responseBody);
+                var modelsArray = jo["models"] as JArray;
+
+                if (modelsArray != null)
+                {
+                    foreach (var m in modelsArray)
+                    {
+                        string name = m["name"]?.ToString() ?? "";
+                        var methods = m["supportedGenerationMethods"] as JArray;
+                        bool canGenerate = methods != null && System.Linq.Enumerable.Any(methods, x => x.ToString() == "generateContent");
+
+                        if (canGenerate && !string.IsNullOrWhiteSpace(name))
+                        {
+                            if (name.StartsWith("models/")) name = name[7..];
+                            result.Add(name);
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                LoggerService.Error($"خطا در پارس لیست مدل‌های Gemini: {ex.Message}", "GEMINI_AI");
+            }
+
+            if (result.Count == 0)
+            {
+                result.AddRange(new[] { "gemini-2.0-flash", "gemini-1.5-pro", "gemini-1.5-flash" });
+            }
+
+            return result;
+        }
+
         public async Task<string> GenerateTextAsync(string prompt, string? customModel = null)
         {
             var settings = AppSettings.Load();

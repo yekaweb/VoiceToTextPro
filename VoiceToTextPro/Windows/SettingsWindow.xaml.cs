@@ -47,6 +47,15 @@ namespace VoiceToTextPro.Windows
                 // Select Theme
                 if (settings.Theme == "Light") ThemeCombo.SelectedIndex = 1;
                 else ThemeCombo.SelectedIndex = 0;
+
+                // Load Gemini Settings
+                GeminiApiKeyTxt.Text = settings.GeminiApiKey;
+                GeminiModelCombo.SelectedIndex = settings.GeminiModel switch
+                {
+                    "gemini-1.5-pro" => 1,
+                    "gemini-1.5-flash" => 2,
+                    _ => 0 // Default: gemini-2.0-flash
+                };
             }
             catch (Exception ex)
             {
@@ -146,6 +155,15 @@ namespace VoiceToTextPro.Windows
 
                 // Save Theme
                 settings.Theme = ThemeCombo.SelectedIndex == 1 ? "Light" : "Dark";
+
+                // Save Gemini Settings
+                settings.GeminiApiKey = GeminiApiKeyTxt.Text.Trim();
+                settings.GeminiModel = GeminiModelCombo.SelectedIndex switch
+                {
+                    1 => "gemini-1.5-pro",
+                    2 => "gemini-1.5-flash",
+                    _ => "gemini-2.0-flash"
+                };
 
                 // Save to appsettings.json
                 settings.Save();

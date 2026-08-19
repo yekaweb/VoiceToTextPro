@@ -183,6 +183,32 @@
                         </StackPanel>
                     </Border>
 
+                    <!-- Section 4: Google Gemini Pro AI Integration -->
+                    <Border Background="#12151C" CornerRadius="12" Padding="16" BorderBrush="#8B5CF6" BorderThickness="1" Margin="0,16,0,0">
+                        <StackPanel>
+                            <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
+                                <materialDesign:PackIcon Kind="Sparkles" Width="18" Height="18" Foreground="#A78BFA" Margin="0,0,8,0"/>
+                                <TextBlock Text="تنظیمات هوش مصنوعی Google Gemini Pro" FontSize="14" FontWeight="SemiBold" Foreground="#F3F4F6"/>
+                            </StackPanel>
+
+                            <!-- Gemini API Key -->
+                            <StackPanel Margin="0,0,0,12">
+                                <TextBlock Text="کلید اختصاصی API (Google Gemini API Key):" FontSize="12" Foreground="#9CA3AF" Margin="0,0,0,4"/>
+                                <TextBox x:Name="GeminiApiKeyTxt" Height="36" Padding="10,6" Background="#1F2430" Foreground="#A78BFA" BorderThickness="1" BorderBrush="#6D28D9" FontSize="12" FontFamily="Consolas"/>
+                            </StackPanel>
+
+                            <!-- Gemini Model Selection -->
+                            <StackPanel>
+                                <TextBlock Text="مدل هوش مصنوعی جمینی (Gemini Model):" FontSize="12" Foreground="#9CA3AF" Margin="0,0,0,4"/>
+                                <ComboBox x:Name="GeminiModelCombo" Height="36" Padding="10,6" Background="#1F2430" Foreground="#F3F4F6" FontSize="12">
+                                    <ComboBoxItem Content="gemini-2.0-flash (پیش‌فرض — فوق‌العاده سریع و دقیق)" IsSelected="True"/>
+                                    <ComboBoxItem Content="gemini-1.5-pro (بالاترین کیفیت و پردازش مستر صوت)"/>
+                                    <ComboBoxItem Content="gemini-1.5-flash (مدل سبک و سریع)"/>
+                                </ComboBox>
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+
                 </StackPanel>
             </ScrollViewer>
 

@@ -12,6 +12,7 @@ using System.Windows.Threading;
 using Microsoft.Win32;
 using VoiceToTextPro.Models;
 using VoiceToTextPro.Services;
+using VoiceToTextPro.Windows;
 
 namespace VoiceToTextPro.Tabs
 {
@@ -792,6 +793,111 @@ namespace VoiceToTextPro.Tabs
 
         private void TimeEdit_Changed(object s, TextChangedEventArgs e) { }
         private void TextEdit_Changed(object s, TextChangedEventArgs e) { }
+
+        private async void GeminiPolish_Click(object sender, RoutedEventArgs e)
+        {
+            if (_entries.Count == 0)
+            {
+                ModernDialogService.ShowWarning("هیچ ردیف زیرنویسی جهت ویراستاری وجود ندارد.", "زیرنویس خالی است");
+                return;
+            }
+
+            if (!GeminiApiClient.Instance.IsConfigured)
+            {
+                ModernDialogService.ShowWarning("کلید Google Gemini API ثبت نشده است. لطفاً ابتدا کلید خود را در پنجره تنظیمات وارد کنید.", "کلید API یافت نشد");
+                new SettingsWindow { Owner = Window.GetWindow(this) }.ShowDialog();
+                if (!GeminiApiClient.Instance.IsConfigured) return;
+            }
+
+            try
+            {
+                SubStatus.Text = "در حال ویراستاری کل زیرنویس توسط Google Gemini Pro...";
+                var fullText = string.Join("\n", _entries.Select(x => x.Text));
+                string polished = await GeminiApiClient.Instance.PolishSubtitleAsync(fullText);
+
+                var lines = polished.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
+                for (int i = 0; i < Math.Min(lines.Length, _entries.Count); i++)
+                {
+                    _entries[i].Text = lines[i].Trim();
+                }
+
+                SubStatus.Text = "ویراستاری هوشمند با Gemini Pro تکمیل گردید.";
+                ModernDialogService.ShowInfo("🎉 ویراستاری و علائم‌گذاری سراسری زیرنویس توسط Google Gemini Pro با موفقیت انجام شد!", "پایان موفقیت‌آمیز ویراستاری");
+            }
+            catch (Exception ex)
+            {
+                SubStatus.Text = "خطا در ویراستاری Gemini.";
+                ModernDialogService.ShowError($"خطا در ارتباط با Gemini API: {ex.Message}", "خطای هوش مصنوعی");
+            }
+        }
+
+        private async void GeminiTranslate_Click(object sender, RoutedEventArgs e)
+        {
+            if (_entries.Count == 0)
+            {
+                ModernDialogService.ShowWarning("هیچ ردیف زیرنویسی جهت ترجمه وجود ندارد.", "زیرنویس خالی است");
+                return;
+            }
+
+            if (!GeminiApiClient.Instance.IsConfigured)
+            {
+                ModernDialogService.ShowWarning("کلید Google Gemini API ثبت نشده است. لطفاً ابتدا کلید خود را در پنجره تنظیمات وارد کنید.", "کلید API یافت نشد");
+                new SettingsWindow { Owner = Window.GetWindow(this) }.ShowDialog();
+                if (!GeminiApiClient.Instance.IsConfigured) return;
+            }
+
+            try
+            {
+                SubStatus.Text = "در حال ترجمه هوشمند توسط Google Gemini Pro...";
+                var fullText = string.Join("\n", _entries.Select(x => x.Text));
+                string translated = await GeminiApiClient.Instance.TranslateSubtitleAsync(fullText, "English");
+
+                var lines = translated.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
+                for (int i = 0; i < Math.Min(lines.Length, _entries.Count); i++)
+                {
+                    _entries[i].TranslatedText = lines[i].Trim();
+                }
+
+                SubStatus.Text = "ترجمه هوشمند Gemini Pro تکمیل گردید.";
+                ModernDialogService.ShowInfo("🌐 ترجمه سراسری با موفقیت انجام و در ستون 'ترجمه' قرار گرفت!", "پایان ترجمه هوشمند");
+            }
+            catch (Exception ex)
+            {
+                SubStatus.Text = "خطا در ترجمه Gemini.";
+                ModernDialogService.ShowError($"خطا در ترجمه با Gemini API: {ex.Message}", "خطای هوش مصنوعی");
+            }
+        }
+
+        private async void GeminiChapters_Click(object sender, RoutedEventArgs e)
+        {
+            if (_entries.Count == 0)
+            {
+                ModernDialogService.ShowWarning("هیچ متن رونویسی‌شده‌ای برای فصل‌بندی وجود ندارد.", "زیرنویس خالی است");
+                return;
+            }
+
+            if (!GeminiApiClient.Instance.IsConfigured)
+            {
+                ModernDialogService.ShowWarning("کلید Google Gemini API ثبت نشده است. لطفاً ابتدا کلید خود را در پنجره تنظیمات وارد کنید.", "کلید API یافت نشد");
+                new SettingsWindow { Owner = Window.GetWindow(this) }.ShowDialog();
+                if (!GeminiApiClient.Instance.IsConfigured) return;
+            }
+
+            try
+            {
+                SubStatus.Text = "در حال ساخت فصل‌های ویدیویی یوتیوب با Gemini Pro...";
+                var fullText = string.Join("\n", _entries.Select(x => $"{x.StartTimeFormatted} {x.Text}"));
+                string chapters = await GeminiApiClient.Instance.GenerateChaptersAsync(fullText);
+
+                SubStatus.Text = "فصل‌بندی یوتیوب آماده گردید.";
+                ModernDialogService.ShowInfo($"📌 فصل‌های ویدیویی تولیدشده توسط Gemini Pro:\n\n{chapters}", "فصل‌بندی خودکار یوتیوب");
+            }
+            catch (Exception ex)
+            {
+                SubStatus.Text = "خطا در تولید فصل‌ها.";
+                ModernDialogService.ShowError($"خطا در ارتباط با Gemini API: {ex.Message}", "خطای هوش مصنوعی");
+            }
+        }
 
         private void FindReplace_Click(object s, RoutedEventArgs e)
         {

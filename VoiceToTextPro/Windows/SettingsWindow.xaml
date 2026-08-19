@@ -1,0 +1,206 @@
+<Window x:Class="VoiceToTextPro.Windows.SettingsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        xmlns:controls="clr-namespace:VoiceToTextPro.Controls"
+        Title="{DynamicResource Settings_Title}"
+        Height="580" Width="680"
+        WindowStartupLocation="CenterOwner"
+        WindowStyle="None"
+        AllowsTransparency="True"
+        Background="Transparent">
+
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesign2.Defaults.xaml"/>
+                <ResourceDictionary Source="pack://application:,,,/VoiceToTextPro;component/Styles/GlassmorphismResources.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Window.Resources>
+
+    <Border Background="{DynamicResource MacBgDarkBrush}" CornerRadius="16" BorderBrush="#33FFFFFF" BorderThickness="1.5">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <!-- Header -->
+            <Border Grid.Row="0" Background="#1A1D24" CornerRadius="16,16,0,0" Padding="16,12">
+                <Grid>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center">
+                        <materialDesign:PackIcon Kind="Cog" Width="22" Height="22" Foreground="#3B82F6" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                        <TextBlock Text="{DynamicResource Settings_Header}" FontSize="16" FontWeight="Bold" Foreground="#F3F4F6" VerticalAlignment="Center"/>
+                    </StackPanel>
+
+                    <!-- Mac Controls -->
+                    <controls:MacWindowControls HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                </Grid>
+            </Border>
+
+            <!-- Content Area -->
+            <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Padding="20">
+                <StackPanel>
+
+                    <!-- Section 1: Storage Paths -->
+                    <Border Background="#12151C" CornerRadius="12" Padding="16" BorderBrush="#1F2937" BorderThickness="1" Margin="0,0,0,16">
+                        <StackPanel>
+                            <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
+                                <materialDesign:PackIcon Kind="FolderOpen" Width="18" Height="18" Foreground="#10B981" Margin="0,0,8,0"/>
+                                <TextBlock Text="{DynamicResource Settings_Paths_Header}" FontSize="14" FontWeight="SemiBold" Foreground="#F3F4F6"/>
+                            </StackPanel>
+
+                            <!-- Output Directory -->
+                            <StackPanel Margin="0,0,0,12">
+                                <TextBlock Text="{DynamicResource Settings_OutputDir}" FontSize="12" Foreground="#9CA3AF" Margin="0,0,0,4"/>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBox x:Name="OutputDirTxt" Height="36" Padding="10,6" Background="#1F2430" Foreground="#F3F4F6" BorderThickness="1" BorderBrush="#374151" FontSize="12"/>
+                                    <Button Grid.Column="1" Click="BrowseOutputDir_Click" Margin="8,0,0,0" Padding="12,0" Height="36" Background="#374151" Foreground="#F3F4F6" BorderThickness="0">
+                                        <StackPanel Orientation="Horizontal">
+                                            <materialDesign:PackIcon Kind="FolderOpen" Width="16" Height="16" Margin="0,0,4,0"/>
+                                            <TextBlock Text="{DynamicResource Btn_Browse}" FontSize="12"/>
+                                        </StackPanel>
+                                    </Button>
+                                </Grid>
+                            </StackPanel>
+
+                            <!-- Downloads Directory -->
+                            <StackPanel Margin="0,0,0,12">
+                                <TextBlock Text="{DynamicResource Settings_DownloadDir}" FontSize="12" Foreground="#9CA3AF" Margin="0,0,0,4"/>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBox x:Name="DownloadDirTxt" Height="36" Padding="10,6" Background="#1F2430" Foreground="#F3F4F6" BorderThickness="1" BorderBrush="#374151" FontSize="12"/>
+                                    <Button Grid.Column="1" Click="BrowseDownloadDir_Click" Margin="8,0,0,0" Padding="12,0" Height="36" Background="#374151" Foreground="#F3F4F6" BorderThickness="0">
+                                        <StackPanel Orientation="Horizontal">
+                                            <materialDesign:PackIcon Kind="FolderOpen" Width="16" Height="16" Margin="0,0,4,0"/>
+                                            <TextBlock Text="{DynamicResource Btn_Browse}" FontSize="12"/>
+                                        </StackPanel>
+                                    </Button>
+                                </Grid>
+                            </StackPanel>
+
+                            <!-- Models Directory -->
+                            <StackPanel>
+                                <TextBlock Text="{DynamicResource Settings_ModelsDir}" FontSize="12" Foreground="#9CA3AF" Margin="0,0,0,4"/>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBox x:Name="ModelsDirTxt" Height="36" Padding="10,6" Background="#1F2430" Foreground="#F3F4F6" BorderThickness="1" BorderBrush="#374151" FontSize="12"/>
+                                    <Button Grid.Column="1" Click="BrowseModelsDir_Click" Margin="8,0,0,0" Padding="12,0" Height="36" Background="#374151" Foreground="#F3F4F6" BorderThickness="0">
+                                        <StackPanel Orientation="Horizontal">
+                                            <materialDesign:PackIcon Kind="FolderOpen" Width="16" Height="16" Margin="0,0,4,0"/>
+                                            <TextBlock Text="{DynamicResource Btn_Browse}" FontSize="12"/>
+                                        </StackPanel>
+                                    </Button>
+                                </Grid>
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Section 2: Speech & Recognition Defaults -->
+                    <Border Background="#12151C" CornerRadius="12" Padding="16" BorderBrush="#1F2937" BorderThickness="1" Margin="0,0,0,16">
+                        <StackPanel>
+                            <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
+                                <materialDesign:PackIcon Kind="Microphone" Width="18" Height="18" Foreground="#3B82F6" Margin="0,0,8,0"/>
+                                <TextBlock Text="{DynamicResource Settings_Speech_Header}" FontSize="14" FontWeight="SemiBold" Foreground="#F3F4F6"/>
+                            </StackPanel>
+
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+
+                                <!-- Default Language -->
+                                <StackPanel Grid.Column="0" Margin="0,0,8,0">
+                                    <TextBlock Text="{DynamicResource Settings_DefaultLang}" FontSize="12" Foreground="#9CA3AF" Margin="0,0,0,4"/>
+                                    <ComboBox x:Name="DefaultLangCombo" Height="36" Padding="10,6" Background="#1F2430" Foreground="#F3F4F6" FontSize="12">
+                                        <ComboBoxItem Content="🇬🇧 English (en-US) — Global Default" IsSelected="True"/>
+                                        <ComboBoxItem Content="🇮🇷 Persian / فارسی (fa-IR)"/>
+                                        <ComboBoxItem Content="🇸🇦 Arabic / العربية (ar-SA)"/>
+                                        <ComboBoxItem Content="🇨🇳 Chinese / 中文 (zh-CN)"/>
+                                        <ComboBoxItem Content="🇷🇺 Russian / Русский (ru-RU)"/>
+                                        <ComboBoxItem Content="🇩🇪 German / Deutsch (de-DE)"/>
+                                        <ComboBoxItem Content="🇹🇷 Turkish / Türkçe (tr-TR)"/>
+                                        <ComboBoxItem Content="🇪🇸 Spanish / Español (es-ES)"/>
+                                        <ComboBoxItem Content="🌐 Auto Detect System Language"/>
+                                    </ComboBox>
+                                </StackPanel>
+
+                                <!-- Preferred Engine -->
+                                <StackPanel Grid.Column="1" Margin="8,0,0,0">
+                                    <TextBlock Text="{DynamicResource Settings_PreferredEngine}" FontSize="12" Foreground="#9CA3AF" Margin="0,0,0,4"/>
+                                    <ComboBox x:Name="PreferredEngineCombo" Height="36" Padding="10,6" Background="#1F2430" Foreground="#F3F4F6" FontSize="12">
+                                        <ComboBoxItem Content="Vosk Local Engine" IsSelected="True"/>
+                                        <ComboBoxItem Content="Faster-Whisper GPU Engine"/>
+                                        <ComboBoxItem Content="Cloud STT Service"/>
+                                    </ComboBox>
+                                </StackPanel>
+                            </Grid>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Section 3: Theme & System -->
+                    <Border Background="#12151C" CornerRadius="12" Padding="16" BorderBrush="#1F2937" BorderThickness="1">
+                        <StackPanel>
+                            <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
+                                <materialDesign:PackIcon Kind="Palette" Width="18" Height="18" Foreground="#F59E0B" Margin="0,0,8,0"/>
+                                <TextBlock Text="{DynamicResource Settings_Theme_Header}" FontSize="14" FontWeight="SemiBold" Foreground="#F3F4F6"/>
+                            </StackPanel>
+
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+
+                                <!-- Theme -->
+                                <StackPanel Grid.Column="0" Margin="0,0,8,0">
+                                    <TextBlock Text="{DynamicResource Settings_Theme}" FontSize="12" Foreground="#9CA3AF" Margin="0,0,0,4"/>
+                                    <ComboBox x:Name="ThemeCombo" Height="36" Padding="10,6" Background="#1F2430" Foreground="#F3F4F6" FontSize="12">
+                                        <ComboBoxItem Content="Dark Glass" IsSelected="True"/>
+                                        <ComboBoxItem Content="Light Glass"/>
+                                    </ComboBox>
+                                </StackPanel>
+
+                                <!-- Python Path -->
+                                <StackPanel Grid.Column="1" Margin="8,0,0,0">
+                                    <TextBlock Text="{DynamicResource Settings_PythonPath}" FontSize="12" Foreground="#9CA3AF" Margin="0,0,0,4"/>
+                                    <TextBox x:Name="PythonPathTxt" Height="36" Padding="10,6" Background="#1F2430" Foreground="#F3F4F6" BorderThickness="1" BorderBrush="#374151" FontSize="12"/>
+                                </StackPanel>
+                            </Grid>
+                        </StackPanel>
+                    </Border>
+
+                </StackPanel>
+            </ScrollViewer>
+
+            <!-- Bottom Actions -->
+            <Border Grid.Row="2" Background="#12151C" Padding="16,12" CornerRadius="0,0,16,16" BorderBrush="#1F2937" BorderThickness="0,1,0,0">
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                    <Button Click="Cancel_Click" Padding="16,8" Height="38" Background="#374151" Foreground="#F3F4F6" BorderThickness="0" Margin="0,0,12,0">
+                        <TextBlock Text="{DynamicResource Btn_Cancel}" FontSize="13"/>
+                    </Button>
+                    <Button Click="Save_Click" Padding="20,8" Height="38" Background="#3B82F6" Foreground="#FFFFFF" BorderThickness="0" FontWeight="Bold">
+                        <StackPanel Orientation="Horizontal">
+                            <materialDesign:PackIcon Kind="ContentSave" Width="16" Height="16" Margin="0,0,6,0"/>
+                            <TextBlock Text="{DynamicResource Btn_Save}" FontSize="13"/>
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
+            </Border>
+
+        </Grid>
+    </Border>
+</Window>

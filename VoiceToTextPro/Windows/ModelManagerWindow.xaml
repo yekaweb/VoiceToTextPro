@@ -1,0 +1,344 @@
+<Window x:Class="VoiceToTextPro.Windows.ModelManagerWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        xmlns:controls="clr-namespace:VoiceToTextPro.Controls"
+        Title="{DynamicResource ModelManager_Title}" Height="680" Width="880"
+        Icon="../Resources/app_icon.png"
+        WindowStartupLocation="CenterOwner"
+        WindowStyle="None"
+        AllowsTransparency="False"
+        FontFamily="{DynamicResource IranSansFont}"
+        Background="{DynamicResource MacBgDarkBrush}"
+        Foreground="#E2E8F0">
+
+    <WindowChrome.WindowChrome>
+        <WindowChrome CaptionHeight="48" ResizeBorderThickness="6" GlassFrameThickness="0" CornerRadius="0"/>
+    </WindowChrome.WindowChrome>
+
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesign2.Defaults.xaml"/>
+                <ResourceDictionary Source="pack://application:,,,/VoiceToTextPro;component/Styles/GlassmorphismResources.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+
+            <DataTemplate x:Key="ModelItemTemplate">
+            <Border BorderThickness="1.5" CornerRadius="8" Padding="12,8" Margin="0,0,0,6"
+                    Background="{DynamicResource MaterialDesignCardBackground}">
+                <Border.Style>
+                    <Style TargetType="Border">
+                        <Setter Property="BorderBrush" Value="{DynamicResource MaterialDesignDivider}"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding IsDownloading}" Value="True">
+                                <Setter Property="BorderBrush" Value="#0EA5E9"/>
+                                <Setter Property="Background" Value="#082F49"/>
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding IsInstalled}" Value="True">
+                                <Setter Property="BorderBrush" Value="#10B981"/>
+                                <Setter Property="Background" Value="#0D281E"/>
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding IsCorrupted}" Value="True">
+                                <Setter Property="BorderBrush" Value="#F59E0B"/>
+                                <Setter Property="Background" Value="#2A1B08"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Border.Style>
+
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                        <!-- Top Row: Language Badge + Clean Name -->
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,0,4">
+                            <Border Background="#1E293B" CornerRadius="4" Padding="6,2" Margin="0,0,8,0" VerticalAlignment="Center">
+                                <TextBlock Text="{Binding DisplayLanguage}" FontSize="11" FontWeight="Bold" Foreground="#38BDF8"/>
+                            </Border>
+                            <!-- LTR text direction prevents parenthesis scrambling -->
+                            <TextBlock FlowDirection="LeftToRight" Text="{Binding CleanName}" FontWeight="Bold" FontSize="13" Foreground="{DynamicResource MaterialDesignBody}" VerticalAlignment="Center"/>
+                        </StackPanel>
+
+                        <!-- Normal Info (Visible when NOT downloading) -->
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                            <StackPanel.Style>
+                                <Style TargetType="StackPanel">
+                                    <Setter Property="Visibility" Value="Visible"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsDownloading}" Value="True">
+                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </StackPanel.Style>
+                            <TextBlock Text="{Binding Description}" FontSize="11" Foreground="#94A3B8" TextTrimming="CharacterEllipsis" MaxWidth="420"/>
+                            <TextBlock Text=" • " FontSize="11" Foreground="#64748B"/>
+                            <TextBlock Text="{Binding Size}" FontSize="11" Foreground="#10B981" FontWeight="Bold"/>
+                        </StackPanel>
+
+                        <!-- Active Downloading Live Progress Info (Visible when IsDownloading == True) -->
+                        <StackPanel Margin="0,2,12,0">
+                            <StackPanel.Style>
+                                <Style TargetType="StackPanel">
+                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsDownloading}" Value="True">
+                                            <Setter Property="Visibility" Value="Visible"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </StackPanel.Style>
+                            
+                            <!-- Progress Stats Row -->
+                            <Grid Margin="0,0,0,3">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <StackPanel Grid.Column="0" Orientation="Horizontal">
+                                    <TextBlock Text="{DynamicResource ModelManager_DownloadingLabel}" FontSize="11" Foreground="#38BDF8" FontWeight="SemiBold"/>
+                                    <TextBlock Text="{Binding DownloadProgressText}" FontSize="11" Foreground="#38BDF8" FontWeight="Bold"/>
+                                </StackPanel>
+                                <TextBlock Grid.Column="1" Text="{Binding DownloadSpeedText}" FontSize="11" Foreground="#10B981" FontWeight="Bold"/>
+                            </Grid>
+
+                            <!-- Card-Specific Live Progress Bar -->
+                            <ProgressBar Height="5" Maximum="100" Value="{Binding DownloadProgress}" Foreground="#38BDF8" Background="#1E293B"/>
+                        </StackPanel>
+                    </StackPanel>
+
+                    <!-- Buttons Panel -->
+                    <Grid Grid.Column="1" VerticalAlignment="Center">
+                        <!-- Standard Buttons Panel (When NOT Downloading) -->
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                            <StackPanel.Style>
+                                <Style TargetType="StackPanel">
+                                    <Setter Property="Visibility" Value="Visible"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsDownloading}" Value="True">
+                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </StackPanel.Style>
+
+                            <!-- Download / Installed / Repair Button -->
+                            <Button CommandParameter="{Binding}" Click="Download_Click" 
+                                    Height="32" Padding="12,0" VerticalAlignment="Center" Margin="6,0,0,0"
+                                    AutomationProperties.Name="دانلود یا ترمیم مدل">
+                                <Button.Style>
+                                    <Style TargetType="Button">
+                                        <Setter Property="Content" Value="{DynamicResource ModelManager_BtnDownload}"/>
+                                        <Setter Property="BorderBrush" Value="#38BDF8"/>
+                                        <Setter Property="Foreground" Value="#38BDF8"/>
+                                        <Setter Property="IsEnabled" Value="True"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsCorrupted}" Value="True">
+                                                <Setter Property="Content" Value="{DynamicResource ModelManager_BtnRepair}"/>
+                                                <Setter Property="BorderBrush" Value="#F59E0B"/>
+                                                <Setter Property="Foreground" Value="#F59E0B"/>
+                                                <Setter Property="IsEnabled" Value="True"/>
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding IsInstalled}" Value="True">
+                                                <Setter Property="Content" Value="{DynamicResource ModelManager_BtnInstalled}"/>
+                                                <Setter Property="BorderBrush" Value="#10B981"/>
+                                                <Setter Property="Foreground" Value="#10B981"/>
+                                                <Setter Property="IsEnabled" Value="False"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Style>
+                            </Button>
+
+                            <!-- Delete Button -->
+                            <Button CommandParameter="{Binding}" Click="Delete_Click"
+                                    ToolTip="{DynamicResource ModelManager_BtnDelete}" Height="32" Padding="8,0" VerticalAlignment="Center" Margin="6,0,0,0"
+                                    AutomationProperties.Name="حذف مدل زبانی">
+                                <Button.Style>
+                                    <Style TargetType="Button">
+                                        <Setter Property="Content" Value="{DynamicResource ModelManager_BtnDelete}"/>
+                                        <Setter Property="BorderBrush" Value="#EF4444"/>
+                                        <Setter Property="Foreground" Value="#EF4444"/>
+                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding CanDelete}" Value="True">
+                                                <Setter Property="Visibility" Value="Visible"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Style>
+                            </Button>
+                        </StackPanel>
+
+                        <!-- Interactive Downloading Controls (Pause / Resume / Cancel) -->
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                            <StackPanel.Style>
+                                <Style TargetType="StackPanel">
+                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsDownloading}" Value="True">
+                                            <Setter Property="Visibility" Value="Visible"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </StackPanel.Style>
+
+                            <!-- Pause / Resume Button -->
+                            <Button Click="PauseResume_Click" Height="32" Padding="10,0" VerticalAlignment="Center" Margin="6,0,0,0"
+                                    ToolTip="توقف موقت یا ادامه دانلود">
+                                <Button.Style>
+                                    <Style TargetType="Button">
+                                        <Setter Property="Content" Value="{DynamicResource ModelManager_BtnPause}"/>
+                                        <Setter Property="BorderBrush" Value="#F59E0B"/>
+                                        <Setter Property="Foreground" Value="#F59E0B"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsPaused}" Value="True">
+                                                <Setter Property="Content" Value="{DynamicResource ModelManager_BtnResume}"/>
+                                                <Setter Property="BorderBrush" Value="#10B981"/>
+                                                <Setter Property="Foreground" Value="#10B981"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Style>
+                            </Button>
+
+                            <!-- Stop / Cancel Button -->
+                             <Button Click="CancelDownload_Click" Height="32" Padding="10,0" VerticalAlignment="Center" Margin="6,0,0,0"
+                                     ToolTip="لغو کامل دانلود"
+                                     Style="{DynamicResource MaterialDesignOutlinedButton}"
+                                     BorderBrush="#EF4444" Foreground="#EF4444">
+                                <TextBlock Text="{DynamicResource ModelManager_BtnCancel}" VerticalAlignment="Center" FontWeight="Bold"/>
+                            </Button>
+                        </StackPanel>
+                    </Grid>
+                </Grid>
+            </Border>
+        </DataTemplate>
+        </ResourceDictionary>
+    </Window.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/> <!-- Custom Titlebar -->
+            <RowDefinition Height="Auto"/> <!-- Incomplete Model Alert Banner -->
+            <RowDefinition Height="Auto"/> <!-- Search & Online Check Bar -->
+            <RowDefinition Height="*"/>    <!-- Content List -->
+            <RowDefinition Height="Auto"/> <!-- Status Bar -->
+        </Grid.RowDefinitions>
+
+        <!-- ══ Header Bar (macOS Window Chrome Header) ══ -->
+        <Border Grid.Row="0" Background="{DynamicResource MacGlassBgBrush}" BorderBrush="{DynamicResource MacGlassBorderBrush}" BorderThickness="0,0,0,1" Padding="16,10">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                    <!-- macOS Traffic Light Window Controls -->
+                    <controls:MacWindowControls Margin="0,0,16,0" WindowChrome.IsHitTestVisibleInChrome="True"/>
+                    <TextBlock Text="{DynamicResource ModelManager_Title}" FontSize="15" FontWeight="Bold" Foreground="#F8FAFC" VerticalAlignment="Center"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- ══ Incomplete Model Warning Banner ══ -->
+        <Border x:Name="IncompleteAlertBanner" Grid.Row="1" Visibility="Collapsed" Background="#2A1B08" BorderBrush="#F59E0B" BorderThickness="1" CornerRadius="8" Padding="12,8" Margin="16,8,16,0">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                    <materialDesign:PackIcon Kind="AlertCircle" Foreground="#F59E0B" Width="20" Height="20" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                    <TextBlock x:Name="IncompleteAlertText" Text="⚠️ یک یا چند مدل زبانی به صورت ناقص دریافت شده‌اند." Foreground="#FDE047" FontWeight="SemiBold" FontSize="12" VerticalAlignment="Center"/>
+                </StackPanel>
+                <Button Grid.Column="1" Click="RepairIncompleteModel_Click" Content="{DynamicResource ModelManager_BtnRepairAlert}" Height="28" Padding="10,0" Background="#F59E0B" Foreground="#000000" BorderThickness="0" FontWeight="Bold" FontSize="12"/>
+            </Grid>
+        </Border>
+
+        <!-- ══ Search Bar & Deep Verification Action Bar ══ -->
+        <Border Grid.Row="2" Background="{DynamicResource MaterialDesignCardBackground}" CornerRadius="8" Padding="12" Margin="16,8,16,8">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- Language Search Input Box -->
+                <Border Grid.Column="0" Background="#1E293B" CornerRadius="6" Padding="10,4" Margin="0,0,12,0" BorderBrush="#334155" BorderThickness="1">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <materialDesign:PackIcon Grid.Column="0" Kind="Magnify" Foreground="#94A3B8" Width="18" Height="18" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                        <TextBox x:Name="SearchTextBox" Grid.Column="1" 
+                                 TextChanged="SearchTextBox_TextChanged"
+                                 Background="Transparent" BorderThickness="0" Foreground="#F8FAFC"
+                                 FontSize="13" VerticalAlignment="Center"
+                                 materialDesign:HintAssist.Hint="{DynamicResource ModelManager_SearchHint}"
+                                 materialDesign:HintAssist.Foreground="#64748B"/>
+                        <Button x:Name="ClearSearchBtn" Grid.Column="2" Click="ClearSearch_Click" Visibility="Collapsed"
+                                Style="{DynamicResource MaterialDesignIconButton}" Width="24" Height="24" Foreground="#94A3B8">
+                            <materialDesign:PackIcon Kind="CloseCircle" Width="16" Height="16"/>
+                        </Button>
+                    </Grid>
+                </Border>
+
+                <!-- Online Deep Check Button -->
+                <Button Grid.Column="1" Click="DeepCheck_Click" 
+                        Style="{DynamicResource MaterialDesignOutlinedButton}" 
+                        BorderBrush="#38BDF8" Foreground="#38BDF8" Height="36" Padding="12,0"
+                        ToolTip="استعلام آنلاین دقیق از سرور منبع جهت تایید سلامت ۱۰۰٪ مدل‌ها"
+                        AutomationProperties.Name="بررسی دقیق آنلاین مدل‌ها">
+                    <StackPanel Orientation="Horizontal">
+                        <materialDesign:PackIcon Kind="ShieldCheck" Width="16" Height="16" Margin="0,0,6,0" VerticalAlignment="Center"/>
+                        <TextBlock Text="{DynamicResource ModelManager_OnlineCheckBtn}" VerticalAlignment="Center" FontSize="12" FontWeight="Bold"/>
+                    </StackPanel>
+                </Button>
+            </Grid>
+        </Border>
+
+        <!-- ══ Main Content Tabs with High-Density Scrollable List ══ -->
+        <Border Grid.Row="3" Background="{DynamicResource MaterialDesignCardBackground}" CornerRadius="8" Padding="8" Margin="16,4,16,8">
+            <TabControl Background="Transparent" BorderThickness="0" Style="{DynamicResource MaterialDesignTabControl}">
+                <TabItem Header="{DynamicResource ModelManager_VoskTab}">
+                    <ListBox x:Name="VoskModelsList" Background="Transparent" BorderThickness="0" 
+                             HorizontalContentAlignment="Stretch" ItemTemplate="{StaticResource ModelItemTemplate}"
+                             ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Disabled"/>
+                </TabItem>
+                <TabItem Header="{DynamicResource ModelManager_WhisperTab}">
+                    <ListBox x:Name="WhisperModelsList" Background="Transparent" BorderThickness="0" 
+                             HorizontalContentAlignment="Stretch" ItemTemplate="{StaticResource ModelItemTemplate}"
+                             ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Disabled"/>
+                </TabItem>
+                <TabItem Header="{DynamicResource ModelManager_PiperTab}">
+                    <ListBox x:Name="PiperModelsList" Background="Transparent" BorderThickness="0" 
+                             HorizontalContentAlignment="Stretch" ItemTemplate="{StaticResource ModelItemTemplate}"
+                             ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Disabled"/>
+                </TabItem>
+            </TabControl>
+        </Border>
+
+        <!-- ══ Bottom Status Bar ══ -->
+        <Border Grid.Row="4" Background="{DynamicResource MaterialDesignCardBackground}" CornerRadius="8" Padding="12,10" Margin="16,0,16,12">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <StackPanel Grid.Column="0">
+                    <TextBlock x:Name="StatusText" Text="{DynamicResource ModelManager_StatusReady}" FontSize="12" Foreground="#94A3B8" Margin="0,0,0,6"
+                               TextTrimming="CharacterEllipsis" TextWrapping="NoWrap"
+                               ToolTip="{Binding Text, RelativeSource={RelativeSource Self}}"/>
+                    <ProgressBar x:Name="DownloadProgress" Maximum="100" Value="0" Height="6" Foreground="#10B981" Background="#334155"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+    </Grid>
+</Window>

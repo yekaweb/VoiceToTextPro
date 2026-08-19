@@ -1,0 +1,411 @@
+<UserControl x:Class="VoiceToTextPro.Tabs.SubtitleTab"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:localConv="clr-namespace:VoiceToTextPro.Converters"
+             FontFamily="{StaticResource IranSansFont}"
+             Foreground="#E2E8F0">
+
+    <UserControl.Resources>
+        <localConv:SpeakerBrushConverter x:Key="SpeakerBrushConv"/>
+
+        <!-- High-Density DataGrid Styles -->
+        <Style x:Key="SubGridHeaderStyle" TargetType="DataGridColumnHeader">
+            <Setter Property="Background" Value="#1E293B"/>
+            <Setter Property="Foreground" Value="#94A3B8"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="FontSize" Value="10.5"/>
+            <Setter Property="Height" Value="28"/>
+            <Setter Property="Padding" Value="4,0"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="BorderThickness" Value="0,0,0,1"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource MaterialDesignDivider}"/>
+        </Style>
+
+        <Style x:Key="SubGridCellStyle" TargetType="DataGridCell">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Padding" Value="4,0"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="DataGridCell">
+                        <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Padding="{TemplateBinding Padding}">
+                            <ContentPresenter VerticalAlignment="Center" HorizontalAlignment="Stretch"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </UserControl.Resources>
+
+    <!-- ══ Root Workspace Grid (ZERO OUTER SCROLLBAR - ZERO DATAGRID BUG) ══ -->
+    <Grid Margin="8">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/> <!-- Row 0: Action Ribbon & AI Generator Header -->
+            <RowDefinition Height="*"/>    <!-- Row 1: Proportional Main Workspace -->
+            <RowDefinition Height="Auto"/> <!-- Row 2: Bottom Status Bar -->
+        </Grid.RowDefinitions>
+
+        <!-- ═════════════════════════════════════════════════════════════════ -->
+        <!-- 📌 ROW 0: COMPACT TOOLBAR & AI GENERATOR HEADER                     -->
+        <!-- ═════════════════════════════════════════════════════════════════ -->
+        <Border Grid.Row="0" Background="{DynamicResource MaterialDesignCardBackground}" CornerRadius="8" Padding="8,6" Margin="0,0,0,6" BorderBrush="{DynamicResource MaterialDesignDivider}" BorderThickness="1">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <!-- Ribbon Toolbar Line 1 -->
+                <WrapPanel Grid.Row="0" Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,0,4">
+                    <!-- File Operations Cluster -->
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0,1,6,1">
+                        <Button Content="{DynamicResource Btn_Open}" Click="OpenSrt_Click" ToolTip="فتح فایل زیرنویس (SRT, VTT, ASS)"
+                                Style="{StaticResource MaterialDesignRaisedButton}" Background="#6366F1" Foreground="White" Height="26" Padding="8,0" FontSize="10.5" Margin="0,0,3,0"/>
+                        <Button Content="💾 SRT" Click="SaveSrt_Click" ToolTip="ذخیره با فرمت SRT" Style="{StaticResource MaterialDesignOutlinedButton}" BorderBrush="#10B981" Foreground="#34D399" Height="26" Padding="6,0" FontSize="10.5" Margin="0,0,3,0"/>
+                        <Button Content="💾 VTT" Click="SaveVtt_Click" ToolTip="ذخیره با فرمت VTT" Style="{StaticResource MaterialDesignOutlinedButton}" BorderBrush="#38BDF8" Foreground="#38BDF8" Height="26" Padding="6,0" FontSize="10.5" Margin="0,0,3,0"/>
+                        <Button Content="💾 ASS" Click="SaveAss_Click" ToolTip="ذخیره با فرمت ASS" Style="{StaticResource MaterialDesignOutlinedButton}" BorderBrush="#C084FC" Foreground="#C084FC" Height="26" Padding="6,0" FontSize="10.5"/>
+                    </StackPanel>
+
+                    <Separator Width="1" Height="16" Background="#334155" Margin="4,2,8,2" VerticalAlignment="Center"/>
+
+                    <!-- AI Cluster -->
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0,1,6,1">
+                        <Button x:Name="BatchAiPolishBtn" Content="{DynamicResource Subtitle_BatchAiPolishBtn}" Click="BatchAiPolish_Click" ToolTip="ارسال خودکار و یک‌به‌یک تمام ردیف‌ها به هوش مصنوعی گوگل و اصلاح سراسری کل زیرنویس" Style="{StaticResource MaterialDesignRaisedButton}" Background="#EC4899" Foreground="White" Height="26" Padding="8,0" FontSize="10.5" Margin="0,0,3,0"/>
+                        <Button Content="{DynamicResource Subtitle_DualTranslateBtn}" Click="TranslateAi_Click" ToolTip="ترجمه هوشمند زیرنویس" Style="{StaticResource MaterialDesignOutlinedButton}" BorderBrush="#8B5CF6" Foreground="#C084FC" Height="26" Padding="6,0" FontSize="10.5" Margin="0,0,3,0"/>
+                        <Button Content="{DynamicResource Subtitle_DiarizeBtn}" Click="DiarizeAudio_Click" ToolTip="تشخیص خودکار گویندگان" Style="{StaticResource MaterialDesignOutlinedButton}" BorderBrush="#C084FC" Foreground="#C084FC" Height="26" Padding="6,0" FontSize="10.5" Margin="0,0,3,0"/>
+                        <Button Content="🎙️ دوبله و کتاب صوتی" Click="AutoDubbingChain_Click" ToolTip="تولید خودکار دوبله متحرک و کتاب صوتی زنجیره‌ای" Style="{StaticResource MaterialDesignRaisedButton}" Background="#00E676" Foreground="#0F172A" Height="26" Padding="8,0" FontSize="10.5" FontWeight="Bold" Margin="3,0,0,0"/>
+                    </StackPanel>
+
+                    <Separator Width="1" Height="16" Background="#334155" Margin="4,2,8,2" VerticalAlignment="Center"/>
+
+                    <!-- Row Editing Cluster -->
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0,1,0,1">
+                        <Button Content="{DynamicResource Subtitle_AddRowBtn}" Click="AddRow_Click" Style="{StaticResource MaterialDesignOutlinedButton}" BorderBrush="#38BDF8" Foreground="#38BDF8" Height="26" Padding="6,0" FontSize="10.5" Margin="0,0,3,0"/>
+                        <Button Content="{DynamicResource Subtitle_DeleteRowBtn}" Click="DeleteRow_Click" Style="{StaticResource MaterialDesignOutlinedButton}" BorderBrush="#F87171" Foreground="#F87171" Height="26" Padding="6,0" FontSize="10.5" Margin="0,0,3,0"/>
+                        <Button Content="{DynamicResource Subtitle_FindReplaceBtn}" Click="FindReplace_Click" Style="{StaticResource MaterialDesignOutlinedButton}" BorderBrush="#FBBF24" Foreground="#FBBF24" Height="26" Padding="6,0" FontSize="10.5"/>
+                    </StackPanel>
+                </WrapPanel>
+
+                <!-- AI Subtitle Generator Line 2 -->
+                <Border Grid.Row="1" Background="{DynamicResource MaterialDesignPaper}" CornerRadius="6" Padding="6,4" BorderBrush="#8B5CF6" BorderThickness="1">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>     <!-- Selected Media Path -->
+                            <ColumnDefinition Width="Auto"/>  <!-- Vosk Model Picker -->
+                            <ColumnDefinition Width="Auto"/>  <!-- Start AI Button -->
+                        </Grid.ColumnDefinitions>
+
+                        <Button Grid.Column="0" Content="{DynamicResource Subtitle_SelectMediaBtn}" Click="SelectMedia_Click" Style="{StaticResource MaterialDesignRaisedButton}" Background="#8B5CF6" Foreground="White" Height="26" Padding="8,0" FontSize="10.5" Margin="0,0,6,0"/>
+                        
+                        <TextBlock x:Name="SelectedMediaText" Grid.Column="1" Text="{DynamicResource Subtitle_NoFileSelected}" VerticalAlignment="Center" Foreground="#94A3B8" FontSize="10.5" Margin="0,0,8,0" TextTrimming="CharacterEllipsis"/>
+                        
+                        <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,6,0">
+                            <TextBlock Text="{DynamicResource Subtitle_ModelLabel}" VerticalAlignment="Center" Foreground="{DynamicResource MaterialDesignBody}" FontSize="10.5" Margin="0,0,3,0"/>
+                            <ComboBox x:Name="VoskModelCombo" Width="120" Style="{StaticResource MaterialDesignOutlinedComboBox}" Background="{DynamicResource MaterialDesignPaper}" Foreground="{DynamicResource MaterialDesignBody}" Height="26" Padding="4,0" FontSize="10.5"/>
+                            <Button Click="SetModelPath_Click" ToolTip="تغییر مسیر مدل‌ها" Style="{StaticResource MaterialDesignOutlinedButton}" BorderBrush="#38BDF8" Foreground="#38BDF8" Height="26" Padding="4,0" Margin="3,0,3,0">
+                                <StackPanel Orientation="Horizontal">
+                                    <materialDesign:PackIcon Kind="FolderOpenOutline" VerticalAlignment="Center" Width="12" Height="12" Margin="0,0,2,0"/>
+                                    <TextBlock Text="{DynamicResource Subtitle_FolderBtn}" VerticalAlignment="Center" FontSize="9.5"/>
+                                </StackPanel>
+                            </Button>
+                            <Button Click="DownloadModels_Click" ToolTip="دانلود مدل‌های جدید" Style="{StaticResource MaterialDesignOutlinedButton}" BorderBrush="#10B981" Foreground="#10B981" Height="26" Padding="4,0">
+                                <StackPanel Orientation="Horizontal">
+                                    <materialDesign:PackIcon Kind="DownloadOutline" VerticalAlignment="Center" Width="12" Height="12" Margin="0,0,2,0"/>
+                                    <TextBlock Text="{DynamicResource Subtitle_MarketBtn}" VerticalAlignment="Center" FontSize="9.5"/>
+                                </StackPanel>
+                            </Button>
+                        </StackPanel>
+
+                        <Button Grid.Column="3" x:Name="StartAiBtn" Click="StartVosk_Click" IsEnabled="False" Style="{StaticResource MaterialDesignRaisedButton}" Background="#10B981" Foreground="White" Height="26" Padding="8,0" FontSize="10.5">
+                            <StackPanel Orientation="Horizontal">
+                                <materialDesign:PackIcon Kind="RocketLaunchOutline" VerticalAlignment="Center" Width="12" Height="12" Margin="0,0,3,0"/>
+                                <TextBlock Text="{DynamicResource Subtitle_GenerateAiBtn}" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
+                    </Grid>
+                </Border>
+            </Grid>
+        </Border>
+
+        <!-- ═════════════════════════════════════════════════════════════════ -->
+        <!-- 📌 ROW 1: MAIN WORKSPACE (DATAGRID + INSPECTOR PANEL)              -->
+        <!-- ═════════════════════════════════════════════════════════════════ -->
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>        <!-- DataGrid occupies dynamic remaining space -->
+                <ColumnDefinition Width="6"/>        <!-- Splitter -->
+                <ColumnDefinition Width="340" MinWidth="320" MaxWidth="420"/> <!-- Right Inspector: Readable 340px width -->
+            </Grid.ColumnDefinitions>
+
+            <!-- ── Left Column: Subtitle DataGrid & Live Progress Banner ── -->
+            <Grid Grid.Column="0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <!-- ══ Batch AI Polish Live Progress Banner ══ -->
+                <Border x:Name="BatchProgressBanner" Grid.Row="0" Background="#1E1B4B" CornerRadius="8" Padding="12,10" Margin="0,0,0,8" BorderBrush="#EC4899" BorderThickness="1.5" Visibility="Collapsed">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+
+                        <!-- Header & Counter -->
+                        <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,0,6">
+                            <TextBlock Text="{DynamicResource Subtitle_BatchProgressTitle}" FontSize="11.5" FontWeight="Bold" Foreground="#F472B6" VerticalAlignment="Center"/>
+                            <TextBlock x:Name="BatchCurrentRowText" Text="ردیف ۱ از ۵۰ (۲٪)" FontSize="11" FontWeight="Bold" Foreground="#38BDF8" Margin="14,0,0,0" VerticalAlignment="Center"/>
+                        </StackPanel>
+
+                        <!-- Cancel Button -->
+                        <Button Grid.Row="0" Grid.Column="1" Click="CancelBatchPolish_Click" Content="{DynamicResource Subtitle_CancelBtn}" Style="{StaticResource MaterialDesignOutlinedButton}" BorderBrush="#F87171" Foreground="#F87171" Height="24" Padding="8,0" FontSize="10" VerticalAlignment="Center"/>
+
+                        <!-- Progress Bar & Detail -->
+                        <Grid Grid.Row="1" Grid.ColumnSpan="2">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+
+                            <ProgressBar x:Name="BatchProgressBar" Grid.Row="0" Minimum="0" Maximum="100" Value="0" Height="6" Foreground="#EC4899" Background="#312E81" Margin="0,4,0,6"/>
+
+                            <TextBlock x:Name="BatchStepDetail" Grid.Row="1" Text="{DynamicResource Subtitle_BatchProgressDetail}" FontSize="10.5" Foreground="#CBD5E1" TextTrimming="CharacterEllipsis"/>
+                        </Grid>
+                    </Grid>
+                </Border>
+
+                <!-- DataGrid Container -->
+                <Border Grid.Row="1" Background="{DynamicResource MaterialDesignCardBackground}" CornerRadius="8" Padding="4" BorderBrush="{DynamicResource MaterialDesignDivider}" BorderThickness="1">
+                    <DataGrid x:Name="SubGrid"
+                              AutoGenerateColumns="False"
+                              CanUserAddRows="False"
+                              Background="Transparent"
+                              RowBackground="{DynamicResource MaterialDesignPaper}"
+                              AlternatingRowBackground="{DynamicResource MaterialDesignCardBackground}"
+                              Foreground="{DynamicResource MaterialDesignBody}"
+                              GridLinesVisibility="Horizontal"
+                              HorizontalGridLinesBrush="{DynamicResource MaterialDesignDivider}"
+                              ColumnHeaderStyle="{StaticResource SubGridHeaderStyle}"
+                              CellStyle="{StaticResource SubGridCellStyle}"
+                              RowHeight="32"
+                              FontSize="11"
+                              VerticalScrollBarVisibility="Auto"
+                              HorizontalScrollBarVisibility="Auto"
+                              SelectionChanged="SubGrid_SelectionChanged">
+                        <DataGrid.Columns>
+                            <!-- Index Column -->
+                            <DataGridTemplateColumn Header="#" Width="38">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding Index}" Foreground="#94A3B8" FontSize="10.5" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+
+                            <!-- Speaker Badge Column -->
+                            <DataGridTemplateColumn Header="{DynamicResource Subtitle_ColSpeaker}" Width="76">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <Border Background="{Binding SpeakerTag, Converter={StaticResource SpeakerBrushConv}}"
+                                                CornerRadius="3" Padding="4,1" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                            <TextBlock Text="{Binding SpeakerTag}" Foreground="Black" FontWeight="Bold" FontSize="9.5"/>
+                                        </Border>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+
+                            <!-- Start Time Column -->
+                            <DataGridTemplateColumn Header="{DynamicResource Subtitle_ColStartTime}" Width="95">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding StartTimeFormatted}" Foreground="#38BDF8" FontSize="10.5" FontWeight="SemiBold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+
+                            <!-- End Time Column -->
+                            <DataGridTemplateColumn Header="{DynamicResource Subtitle_ColEndTime}" Width="95">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding EndTimeFormatted}" Foreground="#F472B6" FontSize="10.5" FontWeight="SemiBold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+
+                            <!-- Duration Column -->
+                            <DataGridTemplateColumn Header="{DynamicResource Subtitle_ColDuration}" Width="60">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding DurationFormatted}" Foreground="#A7F3D0" FontSize="10" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+
+                            <!-- Main Subtitle Text Column -->
+                            <DataGridTemplateColumn Header="{DynamicResource Subtitle_ColText}" Width="*">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding Text}" Foreground="{DynamicResource MaterialDesignBody}" FontSize="11" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" Padding="4,0"/>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+
+                            <!-- Translated Text Column -->
+                            <DataGridTemplateColumn Header="{DynamicResource Subtitle_ColTranslation}" Width="*">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding TranslatedText}" Foreground="#C084FC" FontSize="11" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" Padding="4,0"/>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                            
+                            <!-- AI Correction Button Column -->
+                            <DataGridTemplateColumn Header="{DynamicResource Subtitle_ColActions}" Width="82">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <Button Content="✨ AI" Click="RowAdvancedCorrection_Click" Tag="{Binding}"
+                                                Style="{StaticResource MaterialDesignOutlinedButton}" BorderBrush="#8B5CF6" Foreground="#C084FC" Height="22" Padding="4,0" FontSize="9.5" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Border>
+            </Grid>
+
+            <!-- ── Grid Splitter ── -->
+            <GridSplitter Grid.Column="1" Width="6" HorizontalAlignment="Center" Background="{DynamicResource MaterialDesignDivider}"/>
+
+            <!-- ── Right Column: Subtitle Inspector Panel (Video Player + Fast Row Editor) ── -->
+            <Border Grid.Column="2" Background="{DynamicResource MaterialDesignCardBackground}" CornerRadius="8" Padding="10" BorderBrush="{DynamicResource MaterialDesignDivider}" BorderThickness="1">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="175"/>  <!-- Fixed Media Player Height -->
+                        <RowDefinition Height="*"/>    <!-- Subtitle Row Editor occupies 100% remaining space -->
+                    </Grid.RowDefinitions>
+
+                    <!-- 🎥 Media Player Container (Row 0) -->
+                    <Border Grid.Row="0" Background="Black" CornerRadius="6" ClipToBounds="True" Margin="0,0,0,8">
+                        <Grid>
+                            <MediaElement x:Name="Player" LoadedBehavior="Manual" UnloadedBehavior="Stop" Stretch="Uniform" MediaOpened="Player_MediaOpened" MediaEnded="Player_MediaEnded"/>
+                            
+                            <!-- Subtitle Overlay -->
+                            <TextBlock x:Name="SubtitleOverlay" Text="" Foreground="White" FontSize="12" FontWeight="Bold" 
+                                       HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="4,4,4,30" 
+                                       TextWrapping="Wrap" TextAlignment="Center" FlowDirection="RightToLeft" IsHitTestVisible="False">
+                                <TextBlock.Effect>
+                                    <DropShadowEffect Color="Black" BlurRadius="4" ShadowDepth="2" Direction="315" Opacity="0.9"/>
+                                </TextBlock.Effect>
+                            </TextBlock>
+                            
+                            <!-- Compact Player Control Strip -->
+                            <Border VerticalAlignment="Bottom" Background="#DD000000" Padding="4,2">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Button x:Name="PlayBtn" Grid.Column="0" Content="▶" Click="PlayBtn_Click" Style="{StaticResource MaterialDesignFlatButton}" Foreground="White" Width="22" Height="22" Padding="0" FontSize="11"/>
+                                    <Button x:Name="PauseBtn" Grid.Column="1" Content="⏸" Click="PauseBtn_Click" Style="{StaticResource MaterialDesignFlatButton}" Foreground="White" Width="22" Height="22" Padding="0" FontSize="11"/>
+                                    <Slider x:Name="PlayerSlider" Grid.Column="2" Minimum="0" Maximum="100" Margin="4,0" PreviewMouseDown="PlayerSlider_PreviewMouseDown" PreviewMouseUp="PlayerSlider_PreviewMouseUp" VerticalAlignment="Center" Foreground="#38BDF8"/>
+                                    <TextBlock Grid.Column="3" x:Name="TimeLabel" Text="00:00 / 00:00" Foreground="White" FontSize="9.5" VerticalAlignment="Center"/>
+                                </Grid>
+                            </Border>
+                        </Grid>
+                    </Border>
+
+                    <!-- ✏️ Fast Subtitle Inspector Controls (Row 1) -->
+                    <Grid Grid.Row="1">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/> <!-- Title & Timestamps -->
+                            <RowDefinition Height="*"/>    <!-- Subtitle Text Editor -->
+                            <RowDefinition Height="Auto"/> <!-- Action Buttons -->
+                            <RowDefinition Height="Auto"/> <!-- Status Footer -->
+                        </Grid.RowDefinitions>
+
+                        <!-- Header & Timeline Inputs -->
+                        <StackPanel Grid.Row="0">
+                            <TextBlock Text="{DynamicResource Subtitle_InspectorTitle}" FontSize="12" FontWeight="Bold" Foreground="{DynamicResource MaterialDesignBody}" Margin="0,0,0,6"/>
+
+                            <!-- Side-by-Side Start & End Time Inputs -->
+                            <Grid Margin="0,0,0,6">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="6"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+
+                                <StackPanel Grid.Column="0">
+                                    <TextBlock Text="{DynamicResource Subtitle_StartTimeLabel}" FontSize="9.5" FontWeight="Bold" Foreground="#38BDF8" Margin="0,0,0,2"/>
+                                    <TextBox x:Name="StartEdit" Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                                             Background="{DynamicResource MaterialDesignPaper}" Foreground="{DynamicResource MaterialDesignBody}"
+                                             FontSize="11" FontWeight="Bold" Padding="6,3" TextChanged="TimeEdit_Changed"/>
+                                </StackPanel>
+
+                                <StackPanel Grid.Column="2">
+                                    <TextBlock Text="{DynamicResource Subtitle_EndTimeLabel}" FontSize="9.5" FontWeight="Bold" Foreground="#F472B6" Margin="0,0,0,2"/>
+                                    <TextBox x:Name="EndEdit" Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                                             Background="{DynamicResource MaterialDesignPaper}" Foreground="{DynamicResource MaterialDesignBody}"
+                                             FontSize="11" FontWeight="Bold" Padding="6,3" TextChanged="TimeEdit_Changed"/>
+                                </StackPanel>
+                            </Grid>
+                        </StackPanel>
+
+                        <!-- Subtitle Text Editor -->
+                        <Grid Grid.Row="1" Margin="0,0,0,6">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                            <TextBlock Grid.Row="0" Text="{DynamicResource Subtitle_TextLabel}" FontSize="10" FontWeight="Bold" Foreground="#CBD5E1" Margin="0,0,0,2"/>
+                            <TextBox x:Name="TextEdit" Grid.Row="1" AcceptsReturn="True" TextWrapping="Wrap"
+                                     Style="{StaticResource MaterialDesignOutlinedTextBox}" VerticalScrollBarVisibility="Auto"
+                                     Background="{DynamicResource MaterialDesignPaper}" Foreground="{DynamicResource MaterialDesignBody}"
+                                     FontSize="12" Padding="6" TextChanged="TextEdit_Changed"/>
+                        </Grid>
+
+                        <!-- Action Buttons Bar -->
+                        <StackPanel Grid.Row="2" Margin="0,0,0,6">
+                            <Button Content="{DynamicResource Subtitle_ApplyEditBtn}" Click="ApplyEdit_Click"
+                                    Style="{StaticResource MaterialDesignRaisedButton}" Background="#10B981" Foreground="White" Height="30" FontSize="11" FontWeight="Bold" Margin="0,0,0,4" materialDesign:ButtonAssist.CornerRadius="5"/>
+
+                            <Button x:Name="AdvancedCorrectionBtn" Content="{DynamicResource Subtitle_SmartAiBtn}" Click="AdvancedCorrectionBtn_Click"
+                                    Style="{StaticResource MaterialDesignRaisedButton}" Background="#8B5CF6" Foreground="White" Height="30" FontSize="11" FontWeight="Bold" materialDesign:ButtonAssist.CornerRadius="5"/>
+                        </StackPanel>
+
+                        <!-- Compact Status Box -->
+                        <Border Grid.Row="3" Background="{DynamicResource MaterialDesignPaper}" CornerRadius="5" Padding="6,4">
+                            <StackPanel Orientation="Horizontal">
+                                <materialDesign:PackIcon Kind="InformationOutline" Foreground="#38BDF8" Width="12" Height="12" VerticalAlignment="Center" Margin="0,0,3,0"/>
+                                <TextBlock x:Name="InfoLabel" Text="{DynamicResource Subtitle_NoRowSelected}" Foreground="#94A3B8" FontSize="10" TextWrapping="Wrap" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Border>
+                    </Grid>
+                </Grid>
+            </Border>
+        </Grid>
+
+        <!-- ═════════════════════════════════════════════════════════════════ -->
+        <!-- 📌 ROW 2: COMPACT BOTTOM STATUS BAR                               -->
+        <!-- ═════════════════════════════════════════════════════════════════ -->
+        <Border Grid.Row="2" Background="{DynamicResource MaterialDesignCardBackground}" CornerRadius="6" Padding="8,4" Margin="0,6,0,0">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock x:Name="SubStatus" Text="{DynamicResource Subtitle_NoSubLoadedStatus}" FontSize="10.5" Foreground="#94A3B8" VerticalAlignment="Center"/>
+                <TextBlock x:Name="CountLabel" Grid.Column="1" Text="{DynamicResource Subtitle_ZeroRowsCount}" FontSize="10.5" FontWeight="Bold" Foreground="#34D399" VerticalAlignment="Center"/>
+            </Grid>
+        </Border>
+    </Grid>
+</UserControl>

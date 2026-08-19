@@ -1,0 +1,46 @@
+name: Build and Publish Windows Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build:
+    name: Build & Publish Release Executable
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup .NET 10
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Publish Single-File Executable
+        run: |
+          dotnet publish VoiceToTextPro/VoiceToTextPro.csproj -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -o publish
+          xcopy workers publish\workers /E /I /H /Y
+
+      - name: Compress Release ZIP
+        run: Compress-Archive -Path publish\* -DestinationPath VoiceToTextPro_v2.0.0_win-x64.zip -Force
+
+      - name: Create GitHub Release & Upload Assets
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            VoiceToTextPro_v2.0.0_win-x64.zip
+            VoiceToTextPro_Setup.iss
+          name: "🎙️ VoiceToText Pro v2.0.0 - Phoenix Voice Studio"
+          body: |
+            ## 🌟 Release v2.0.0 Highlights
+            
+            - **Standalone Windows x64 Binary**: No pre-installed .NET Runtime required.
+            - **Text-to-Speech (TTS) Studio**: Multi-tier engine featuring Microsoft Neural Voices (`fa-IR-DilaraNeural` & `fa-IR-FaridNeural`).
+            - **Voice-to-Voice (V2V) Conversion**: Pitch modulation, formant spectral warping, and voice identity transformation.
+            - **Automated Chain Pipeline**: 1-Click Subtitle Dubbing & Multi-Speaker Audiobook generator with background music ducking.
+            - **Glassmorphism Dark UI**: Modern responsive interface with low latency.
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

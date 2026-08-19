@@ -1,0 +1,41 @@
+<Application x:Class="VoiceToTextPro.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:conv="clr-namespace:VoiceToTextPro.Converters"
+             StartupUri="MainWindow.xaml">
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <materialDesign:BundledTheme BaseTheme="Dark" PrimaryColor="DeepPurple" SecondaryColor="Cyan"/>
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesign2.Defaults.xaml"/>
+                <ResourceDictionary Source="Styles/GlassmorphismResources.xaml"/>
+                <ResourceDictionary Source="Resources/Languages/Strings.en-US.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+
+            <FontFamily x:Key="IranSansFont">pack://application:,,,/Fonts/IranSans/#IRANSans</FontFamily>
+
+            <conv:StringToBrushConverter x:Key="StringToBrushConverter"/>
+
+            <!-- Dynamic Theme Brushes -->
+            <SolidColorBrush x:Key="AppPrimaryBackground" Color="#1E1E2E"/>
+            <SolidColorBrush x:Key="AppSurfaceBackground" Color="#2A2A3C"/>
+            <SolidColorBrush x:Key="AppBorderBrush" Color="#3F3F56"/>
+            <SolidColorBrush x:Key="AppTextPrimary" Color="#F8F8F2"/>
+            <SolidColorBrush x:Key="AppTextSecondary" Color="#A6ADC8"/>
+
+            <Style TargetType="Window">
+                <Setter Property="FontFamily" Value="{StaticResource IranSansFont}"/>
+            </Style>
+
+            <!-- Base text style -->
+            <Style TargetType="TextBlock">
+                <Setter Property="FontFamily" Value="{StaticResource IranSansFont}"/>
+            </Style>
+            
+            <Style TargetType="Control">
+                <Setter Property="FontFamily" Value="{StaticResource IranSansFont}"/>
+            </Style>
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>

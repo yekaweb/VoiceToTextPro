@@ -1,0 +1,27 @@
+# Build and Release Directories
+publish/
+bin/
+obj/
+*.zip
+*.exe
+*.iso
+*.user
+*.suo
+.vs/
+*.log
+
+# Python Cache & Temp Files
+__pycache__/
+*.pyc
+*.part
+*.wav
+*.mp3
+*.mp4
+*.srt
+*.txt
+
+# Media & Screenshots
+screenshots/
+redesign/
+models/
+output/

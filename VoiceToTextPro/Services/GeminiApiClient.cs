@@ -85,9 +85,31 @@ namespace VoiceToTextPro.Services
             }
 
             string model = !string.IsNullOrWhiteSpace(customModel) ? customModel : settings.GeminiModel;
-            if (string.IsNullOrWhiteSpace(model)) model = "gemini-2.0-flash";
+            if (string.IsNullOrWhiteSpace(model)) model = "gemini-1.5-flash";
 
-            string url = $"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent?key={settings.GeminiApiKey}";
+            try
+            {
+                return await ExecuteGenerateTextRequestAsync(prompt, model, settings.GeminiApiKey);
+            }
+            catch (HttpRequestException ex) when (ex.Message.Contains("404") || ex.Message.Contains("NotFound") || ex.Message.Contains("no longer available"))
+            {
+                LoggerService.Warn($"مدل '{model}' روی سرور گوگل غیرفعال است. در حال دریافت خودکار مدل‌های فعال اکانت شما...", "GEMINI_AI");
+
+                var activeModels = await FetchAvailableModelsAsync(settings.GeminiApiKey);
+                string fallbackModel = System.Linq.Enumerable.FirstOrDefault(activeModels, m => !m.Equals(model, StringComparison.OrdinalIgnoreCase)) ?? "gemini-1.5-flash";
+
+                LoggerService.Info($"مدل فعال جدید جایگزین شد: {fallbackModel}", "GEMINI_AI");
+                settings.GeminiModel = fallbackModel;
+                settings.Save();
+
+                return await ExecuteGenerateTextRequestAsync(prompt, fallbackModel, settings.GeminiApiKey);
+            }
+        }
+
+        private async Task<string> ExecuteGenerateTextRequestAsync(string prompt, string model, string apiKey)
+        {
+            if (model.StartsWith("models/")) model = model[7..];
+            string url = $"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent?key={apiKey}";
 
             var requestPayload = new
             {

@@ -21,7 +21,7 @@ namespace VoiceToTextPro.Services
         public string ModelsDirectory { get; set; } =
             Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Subtitle Edit", "Vosk");
         public string GeminiApiKey { get; set; } = "";
-        public string GeminiModel { get; set; } = "gemini-2.0-flash";
+        public string GeminiModel { get; set; } = "gemini-1.5-flash";
 
         public static AppSettings Instance
         {

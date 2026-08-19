@@ -222,9 +222,9 @@
                             <StackPanel>
                                 <TextBlock Text="مدل هوش مصنوعی جمینی (Gemini Model):" FontSize="12" Foreground="#9CA3AF" Margin="0,0,0,4"/>
                                 <ComboBox x:Name="GeminiModelCombo" Height="36" Padding="10,6" Background="#1F2430" Foreground="#F3F4F6" FontSize="12">
-                                    <ComboBoxItem Content="gemini-2.0-flash (پیش‌فرض — فوق‌العاده سریع و دقیق)" IsSelected="True"/>
-                                    <ComboBoxItem Content="gemini-1.5-pro (بالاترین کیفیت و پردازش مستر صوت)"/>
-                                    <ComboBoxItem Content="gemini-1.5-flash (مدل سبک و سریع)"/>
+                                    <ComboBoxItem Content="gemini-1.5-flash (پیش‌فرض استاندارد — سریع و رایگان)" IsSelected="True"/>
+                                    <ComboBoxItem Content="gemini-1.5-pro (بالاترین کیفیت ادبی و رونویسی صوت)"/>
+                                    <ComboBoxItem Content="gemini-2.0-flash (نسخه آزمایشی سری 2.0)"/>
                                 </ComboBox>
                             </StackPanel>
                         </StackPanel>

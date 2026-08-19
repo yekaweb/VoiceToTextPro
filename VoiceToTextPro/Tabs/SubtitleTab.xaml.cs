@@ -569,8 +569,20 @@ namespace VoiceToTextPro.Tabs
                     
                     if (userAgreed == true)
                     {
+                        int index = _entries.IndexOf(_selected);
+                        if (index > 0)
+                        {
+                            correctedText = DeduplicateOverlapWords(_entries[index - 1].Text, correctedText);
+                        }
+
                         TextEdit.Text = correctedText;
                         ApplyEdit_Click(this, new RoutedEventArgs());
+
+                        if (index >= 0 && index < _entries.Count - 1)
+                        {
+                            _entries[index + 1].Text = DeduplicateOverlapWords(correctedText, _entries[index + 1].Text);
+                        }
+
                         LoggerService.SuccessLocalized("Log_SUBTITLE_EDITOR_fae0a8", "متن ردیف {0} با موفقیت توسط گوگل جایگزین شد.", "SUBTITLE_EDITOR", _selected.Index);
                     }
                 }
@@ -680,6 +692,11 @@ namespace VoiceToTextPro.Tabs
                     // 3. Update entry live
                     if (success && !string.IsNullOrEmpty(correctedText) && !correctedText.StartsWith("خطا"))
                     {
+                        if (i > 0)
+                        {
+                            correctedText = DeduplicateOverlapWords(_entries[i - 1].Text, correctedText);
+                        }
+
                         Dispatcher.Invoke(() =>
                         {
                             entry.Text = correctedText;
@@ -703,6 +720,9 @@ namespace VoiceToTextPro.Tabs
                     await Task.Delay(250, token);
                 }
 
+                // Final pass to clean any remaining word overlaps between adjacent rows
+                SanitizeAllSubtitleOverlaps();
+
                 if (token.IsCancellationRequested)
                 {
                     LoggerService.WarnLocalized("Log_SUBTITLE_EDITOR_56d5f9", "عملیات اصلاح سراسری توسط کاربر لغو شد. {0} ردیف اصلاح شده بودند.", "SUBTITLE_EDITOR", updatedCount);
@@ -711,7 +731,7 @@ namespace VoiceToTextPro.Tabs
                 {
                     LoggerService.SuccessLocalized("Log_SUBTITLE_EDITOR_7059d6", "اصلاح سراسری زیرنویس به پایان رسید. {0} از {1} ردیف با موفقیت توسط گوگل بازنویسی شدند.", "SUBTITLE_EDITOR", updatedCount, total);
                     ModernDialogService.ShowInfo(
-                        $"🎉 پروسه اصلاح سراسری با موفقیت پایان یافت!\n\nتعداد {updatedCount} ردیف از مجموع {total} ردیف با هوش مصنوعی گوگل دقیق‌تر بازنویسی شدند.",
+                        $"🎉 پروسه اصلاح سراسری با موفقیت پایان یافت!\n\nتعداد {updatedCount} ردیف از مجموع {total} ردیف با هوش مصنوعی گوگل دقیق‌تر بازنویسی شدند.\nهمچنین کلمات تکراری در مرز ردیف‌ها به صورت خودکار پاکسازی شدند.",
                         "اتمام موفقیت‌آمیز اصلاح سراسری");
                 }
             }
@@ -820,6 +840,8 @@ namespace VoiceToTextPro.Tabs
                 {
                     _entries[i].Text = lines[i].Trim();
                 }
+
+                SanitizeAllSubtitleOverlaps();
 
                 SubStatus.Text = "ویراستاری هوشمند با Gemini Pro تکمیل گردید.";
                 ModernDialogService.ShowInfo("🎉 ویراستاری و علائم‌گذاری سراسری زیرنویس توسط Google Gemini Pro با موفقیت انجام شد!", "پایان موفقیت‌آمیز ویراستاری");
@@ -937,6 +959,82 @@ namespace VoiceToTextPro.Tabs
                 dlg.ShowDialog();
             }
             catch (Exception ex) { LoggerService.Error($"FindReplace: {ex.Message}", "SUBTITLE"); }
+        }
+
+        private string DeduplicateOverlapWords(string prevText, string currentText)
+        {
+            if (string.IsNullOrWhiteSpace(prevText) || string.IsNullOrWhiteSpace(currentText))
+                return currentText;
+
+            char[] separators = new[] { ' ', '\t', '\r', '\n' };
+            var prevWords = prevText.Split(separators, StringSplitOptions.RemoveEmptyEntries);
+            var currWords = currentText.Split(separators, StringSplitOptions.RemoveEmptyEntries);
+
+            if (prevWords.Length == 0 || currWords.Length == 0)
+                return currentText;
+
+            static string CleanWord(string w)
+            {
+                if (string.IsNullOrWhiteSpace(w)) return "";
+                var sb = new StringBuilder();
+                foreach (char c in w)
+                {
+                    if (char.IsLetterOrDigit(c))
+                        sb.Append(c);
+                }
+                return sb.ToString().ToLowerInvariant();
+            }
+
+            int maxCheck = Math.Min(4, Math.Min(prevWords.Length, currWords.Length));
+
+            for (int overlapLen = maxCheck; overlapLen >= 1; overlapLen--)
+            {
+                bool match = true;
+                for (int k = 0; k < overlapLen; k++)
+                {
+                    string prevW = CleanWord(prevWords[prevWords.Length - overlapLen + k]);
+                    string currW = CleanWord(currWords[k]);
+
+                    if (string.IsNullOrEmpty(prevW) || string.IsNullOrEmpty(currW) || prevW != currW)
+                    {
+                        match = false;
+                        break;
+                    }
+                }
+
+                if (match)
+                {
+                    var remainingWords = currWords.Skip(overlapLen);
+                    string cleaned = string.Join(" ", remainingWords).Trim();
+                    LoggerService.Info($"حذف کلمه/کلمات همپوشانی تکراری بین ردیف‌ها: '{string.Join(" ", currWords.Take(overlapLen))}'", "SUBTITLE_DEDUP");
+                    return cleaned;
+                }
+            }
+
+            return currentText;
+        }
+
+        private void SanitizeAllSubtitleOverlaps()
+        {
+            if (_entries == null || _entries.Count < 2) return;
+
+            int cleanedCount = 0;
+            for (int i = 1; i < _entries.Count; i++)
+            {
+                string prev = _entries[i - 1].Text;
+                string curr = _entries[i].Text;
+                string deduped = DeduplicateOverlapWords(prev, curr);
+                if (deduped != curr)
+                {
+                    _entries[i].Text = deduped;
+                    cleanedCount++;
+                }
+            }
+
+            if (cleanedCount > 0)
+            {
+                LoggerService.Info($"تعداد {cleanedCount} کلمه/کلمات همپوشانی تکراری در مرز ردیف‌ها پاکسازی شد.", "SUBTITLE_DEDUP");
+            }
         }
     }
 }

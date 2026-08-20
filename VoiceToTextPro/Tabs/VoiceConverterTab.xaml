@@ -27,6 +27,9 @@
                     <StackPanel Orientation="Horizontal" Margin="0,0,0,4">
                         <materialDesign:PackIcon Kind="RecordRec" Width="26" Height="26" Foreground="{DynamicResource PrimaryHueMidBrush}" VerticalAlignment="Center" Margin="0,0,8,0"/>
                         <TextBlock Text="{DynamicResource Tab_V2V_Title}" FontSize="20" FontWeight="Bold" Foreground="{DynamicResource MaterialDesignBody}"/>
+                        <Border Background="#F59E0B" CornerRadius="4" Padding="6,2" Margin="8,0,0,0" VerticalAlignment="Center" ToolTip="بخش آزمایشگاهی (در حال توسعه و تکمیل)">
+                            <TextBlock Text="BETA" FontSize="10" FontWeight="Black" Foreground="#000000"/>
+                        </Border>
                     </StackPanel>
                     <TextBlock Text="{DynamicResource Tab_V2V_SubTitle}" FontSize="12" Foreground="{DynamicResource MaterialDesignBodyLight}" Margin="34,0,0,0"/>
                 </StackPanel>

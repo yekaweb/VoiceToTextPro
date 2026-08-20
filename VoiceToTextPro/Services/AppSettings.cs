@@ -7,8 +7,35 @@ namespace VoiceToTextPro.Services
     {
         private static readonly object _lock = new();
         private static AppSettings? _cachedInstance;
-        private static readonly string SettingsPath =
-            Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "appsettings.json");
+        private static readonly string SettingsPath = GetSettingsFilePath();
+
+        private static string GetSettingsFilePath()
+        {
+            string appDataFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "VoiceToTextPro");
+            string appDataPath = Path.Combine(appDataFolder, "appsettings.json");
+            string baseDirPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "appsettings.json");
+
+            // Check if base directory is writable (e.g. portable app or dev build)
+            try
+            {
+                string testFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, ".perm_test");
+                File.WriteAllText(testFile, "test");
+                File.Delete(testFile);
+
+                // Base directory is writable! Return baseDirPath if file exists or AppData doesn't exist
+                if (File.Exists(baseDirPath) || !File.Exists(appDataPath))
+                {
+                    return baseDirPath;
+                }
+            }
+            catch
+            {
+                // Base directory is read-only (e.g., C:\Program Files (x86)\)
+            }
+
+            Directory.CreateDirectory(appDataFolder);
+            return appDataPath;
+        }
 
         public string OutputDirectory { get; set; } =
             Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "VoiceToTextPro", "output");
@@ -42,7 +69,16 @@ namespace VoiceToTextPro.Services
             try
             {
                 if (File.Exists(SettingsPath))
+                {
                     return JsonConvert.DeserializeObject<AppSettings>(File.ReadAllText(SettingsPath)) ?? new AppSettings();
+                }
+
+                // Fallback read from base directory template if AppData settings file does not exist yet
+                string baseDirPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "appsettings.json");
+                if (File.Exists(baseDirPath))
+                {
+                    return JsonConvert.DeserializeObject<AppSettings>(File.ReadAllText(baseDirPath)) ?? new AppSettings();
+                }
             }
             catch (Exception ex)
             {

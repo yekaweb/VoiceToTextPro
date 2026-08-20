@@ -8,6 +8,17 @@ using VoiceToTextPro.Models;
 
 namespace VoiceToTextPro.Services
 {
+    /// <summary>
+    /// V2V conversion engine mode selector.
+    /// </summary>
+    public enum V2VEngineMode
+    {
+        Auto,
+        StudioClone,   // IndexTTS 2 — zero noise cascaded STT→TTS
+        DirectNeural,  // RVC v2 — direct neural voice transfer
+        Legacy         // Original DSP pitch-shift engine
+    }
+
     public class VoiceProfileInfo
     {
         public string Name { get; set; } = string.Empty;
@@ -96,7 +107,7 @@ namespace VoiceToTextPro.Services
         /// <summary>
         /// Converts source audio file to target voice profile asynchronously.
         /// </summary>
-        public async Task<string> ConvertVoiceAsync(string sourceWavPath, string targetProfilePath, string outputWavPath, int pitchShift = 0, bool denoise = true, float blendRatio = 1.0f)
+        public async Task<string> ConvertVoiceAsync(string sourceWavPath, string targetProfilePath, string outputWavPath, int pitchShift = 0, bool denoise = true, float blendRatio = 1.0f, V2VEngineMode engineMode = V2VEngineMode.Auto)
         {
             if (!File.Exists(sourceWavPath))
             {
@@ -120,11 +131,20 @@ namespace VoiceToTextPro.Services
                 targetOutputFile = Path.Combine(cacheDir, $"v2v_output_{DateTime.Now:yyyyMMdd_HHmmss}.wav");
             }
 
+            // Map engine mode to CLI argument
+            string engineArg = engineMode switch
+            {
+                V2VEngineMode.StudioClone => "indextts",
+                V2VEngineMode.DirectNeural => "rvc",
+                V2VEngineMode.Legacy => "legacy",
+                _ => "auto"
+            };
+
             string denoiseArg = denoise ? "--denoise" : "";
             var psi = new ProcessStartInfo
             {
                 FileName = pythonExe,
-                Arguments = $"\"{scriptPath}\" --source_wav \"{sourceWavPath}\" --target_profile \"{targetProfilePath}\" --output_wav \"{targetOutputFile}\" --pitch_shift {pitchShift} {denoiseArg} --blend_ratio {blendRatio}",
+                Arguments = $"\"{scriptPath}\" --source_wav \"{sourceWavPath}\" --target_profile \"{targetProfilePath}\" --output_wav \"{targetOutputFile}\" --engine {engineArg} --precleaner auto --pitch_shift {pitchShift} {denoiseArg} --blend_ratio {blendRatio}",
                 UseShellExecute = false,
                 CreateNoWindow = true,
                 RedirectStandardOutput = true,

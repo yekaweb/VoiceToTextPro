@@ -90,11 +90,22 @@ namespace VoiceToTextPro
                     foreach (var dir in modelDirs)
                     {
                         string folderName = Path.GetFileName(dir);
+
+                        // Skip non-model system/user folders inside ModelsDirectory (e.g., voice_profiles, piper root, temp, downloads)
+                        if (folderName.Equals("voice_profiles", StringComparison.OrdinalIgnoreCase) ||
+                            folderName.Equals("piper", StringComparison.OrdinalIgnoreCase) ||
+                            folderName.Equals("temp", StringComparison.OrdinalIgnoreCase) ||
+                            folderName.Equals("downloads", StringComparison.OrdinalIgnoreCase) ||
+                            folderName.StartsWith("."))
+                        {
+                            continue;
+                        }
+
                         var dummyModel = new VoiceToTextPro.Models.AiModel
                         {
                             Name = folderName,
                             FolderName = folderName,
-                            Url = folderName.StartsWith("faster-whisper") ? $"huggingface:Systran/{folderName}" : "https://alphacephei.com/vosk"
+                            Url = folderName.StartsWith("faster-whisper") || folderName.StartsWith("faster-distil") ? $"huggingface:Systran/{folderName}" : "https://alphacephei.com/vosk"
                         };
 
                         var status = ModelDownloadManager.Instance.VerifyModelIntegrity(dummyModel, targetDir);

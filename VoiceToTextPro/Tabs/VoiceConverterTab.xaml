@@ -15,8 +15,8 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <!-- ══ Header Banner ══ -->
-        <Border Grid.Row="0" Background="{DynamicResource MaterialDesignCardBackground}" CornerRadius="12" Padding="16,14" Margin="0,0,0,16">
+        <!-- ══ Header Banner (macOS Dark Glass Card) ══ -->
+        <Border Grid.Row="0" Style="{DynamicResource MacGlassCardStyle}" Padding="16,12" Margin="0,0,0,14">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
@@ -24,140 +24,147 @@
                 </Grid.ColumnDefinitions>
 
                 <StackPanel Orientation="Vertical">
-                    <StackPanel Orientation="Horizontal" Margin="0,0,0,4">
-                        <materialDesign:PackIcon Kind="RecordRec" Width="26" Height="26" Foreground="{DynamicResource PrimaryHueMidBrush}" VerticalAlignment="Center" Margin="0,0,8,0"/>
-                        <TextBlock Text="{DynamicResource Tab_V2V_Title}" FontSize="20" FontWeight="Bold" Foreground="{DynamicResource MaterialDesignBody}"/>
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,2">
+                        <materialDesign:PackIcon Kind="RecordRec" Width="24" Height="24" Foreground="#A855F7" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                        <TextBlock Text="{DynamicResource Tab_V2V_Title}" FontSize="18" FontWeight="Bold" Foreground="#F1F5F9" VerticalAlignment="Center"/>
                         <Border Background="#F59E0B" CornerRadius="4" Padding="6,2" Margin="8,0,0,0" VerticalAlignment="Center" ToolTip="بخش آزمایشگاهی (در حال توسعه و تکمیل)">
                             <TextBlock Text="BETA" FontSize="10" FontWeight="Black" Foreground="#000000"/>
                         </Border>
                     </StackPanel>
-                    <TextBlock Text="{DynamicResource Tab_V2V_SubTitle}" FontSize="12" Foreground="{DynamicResource MaterialDesignBodyLight}" Margin="34,0,0,0"/>
+                    <TextBlock Text="{DynamicResource Tab_V2V_SubTitle}" FontSize="12" Foreground="#94A3B8" Margin="32,0,0,0"/>
                 </StackPanel>
 
-                <!-- Disclaimer Badge -->
-                <Border Grid.Column="1" Background="#1E00E676" BorderBrush="#00E676" BorderThickness="1" CornerRadius="16" Padding="12,6" VerticalAlignment="Center">
+                <!-- Status Badge -->
+                <Border Grid.Column="1" Background="#0D2D1E" BorderBrush="#10B981" BorderThickness="1" CornerRadius="16" Padding="12,5" VerticalAlignment="Center">
                     <StackPanel Orientation="Horizontal">
-                        <materialDesign:PackIcon Kind="ShieldCheck" Width="16" Height="16" Foreground="#00E676" VerticalAlignment="Center" Margin="0,0,6,0"/>
-                        <TextBlock Text="Offline AI Voice Engine" FontSize="11" FontWeight="SemiBold" Foreground="#00E676" VerticalAlignment="Center"/>
+                        <materialDesign:PackIcon Kind="ShieldCheck" Width="16" Height="16" Foreground="#10B981" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                        <TextBlock Text="Offline AI Voice Engine" FontSize="11" FontWeight="SemiBold" Foreground="#10B981" VerticalAlignment="Center"/>
                     </StackPanel>
                 </Border>
             </Grid>
         </Border>
 
-        <!-- ══ Main Content Grid ══ -->
+        <!-- ══ Main Content Grid (Zero-Scroll Proportional Grid) ══ -->
         <Grid Grid.Row="1">
             <Grid.ColumnDefinitions>
-                <!-- Controls Column (Left) -->
-                <ColumnDefinition Width="420"/>
-                <!-- Dual Player Column (Right) -->
+                <!-- Controls Sidebar (Left) -->
+                <ColumnDefinition Width="380"/>
+                <!-- Dual Player Studio (Right) -->
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
 
-            <!-- ══ Left Panel: Controls & Dropzone ══ -->
-            <Border Grid.Column="0" Background="{DynamicResource MaterialDesignCardBackground}" CornerRadius="12" Padding="16" Margin="0,0,12,0">
-                <ScrollViewer VerticalScrollBarVisibility="Auto">
+            <!-- ══ Left Panel: Voice Controls Studio ══ -->
+            <Border Grid.Column="0" Style="{DynamicResource MacGlassCardStyle}" Padding="16" Margin="0,0,12,0">
+                <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
                     <StackPanel Orientation="Vertical">
                         
-                        <!-- Drag and Drop Dropzone -->
-                        <TextBlock Text="۱. انتخاب فایل صوتی منبع (Source Audio)" FontSize="13" FontWeight="Bold" Foreground="{DynamicResource MaterialDesignBody}" Margin="0,0,0,8"/>
+                        <!-- 1. Source Audio File Dropzone -->
+                        <TextBlock Text="۱. انتخاب فایل صوتی ورودی (Source)" FontSize="13" FontWeight="Bold" Foreground="#F1F5F9" Margin="0,0,0,8"/>
                         
                         <Border x:Name="AudioDropZone" AllowDrop="True" Drop="AudioDropZone_Drop" MouseLeftButtonDown="AudioDropZone_Click"
-                                Background="#0DFFFFFF" BorderBrush="{DynamicResource PrimaryHueMidBrush}" BorderThickness="1.5" 
-                                CornerRadius="10" Padding="16" Cursor="Hand" Margin="0,0,0,16">
+                                Background="#1A2030" BorderBrush="#A855F7" BorderThickness="1.5" 
+                                CornerRadius="10" Padding="14,12" Cursor="Hand" Margin="0,0,0,14">
                             <StackPanel Orientation="Vertical" HorizontalAlignment="Center">
-                                <materialDesign:PackIcon Kind="CloudUpload" Width="36" Height="36" Foreground="{DynamicResource PrimaryHueMidBrush}" HorizontalAlignment="Center" Margin="0,0,0,8"/>
-                                <TextBlock x:Name="DropZoneFileNameText" Text="فایل صوتی را بکشید و در اینجا رها کنید" FontSize="13" FontWeight="SemiBold" Foreground="{DynamicResource MaterialDesignBody}" HorizontalAlignment="Center" TextAlignment="Center" TextWrapping="Wrap"/>
-                                <TextBlock x:Name="DropZoneSubText" Text="یا برای انتخاب کلیک کنید (WAV, MP3, M4A, FLAC, OGG)" FontSize="11" Foreground="{DynamicResource MaterialDesignBodyLight}" HorizontalAlignment="Center" Margin="0,4,0,0"/>
+                                <materialDesign:PackIcon Kind="CloudUpload" Width="32" Height="32" Foreground="#A855F7" HorizontalAlignment="Center" Margin="0,0,0,6"/>
+                                <TextBlock x:Name="DropZoneFileNameText" Text="فایل صوتی را بکشید و رها کنید" FontSize="12" FontWeight="SemiBold" Foreground="#F1F5F9" HorizontalAlignment="Center" TextAlignment="Center" TextWrapping="Wrap"/>
+                                <TextBlock x:Name="DropZoneSubText" Text="کلیک برای انتخاب (WAV, MP3, M4A, FLAC, OGG)" FontSize="10" Foreground="#94A3B8" HorizontalAlignment="Center" Margin="0,3,0,0"/>
                             </StackPanel>
                         </Border>
 
-                        <!-- Target Voice Profile Picker -->
-                        <TextBlock Text="۲. انتخاب گوینده هدف (Target Voice Profile)" FontSize="13" FontWeight="Bold" Foreground="{DynamicResource MaterialDesignBody}" Margin="0,0,0,8"/>
+                        <!-- 2. Target Voice Speaker Profile -->
+                        <TextBlock Text="۲. انتخاب گوینده هدف (Target Voice)" FontSize="13" FontWeight="Bold" Foreground="#F1F5F9" Margin="0,0,0,8"/>
                         
-                        <Grid Margin="0,0,0,16">
+                        <Grid Margin="0,0,0,14">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="Auto"/>
                                 <ColumnDefinition Width="Auto"/>
                             </Grid.ColumnDefinitions>
-                            <ComboBox x:Name="VoiceProfileComboBox" Grid.Column="0" Style="{DynamicResource MaterialDesignOutlinedComboBox}" DisplayMemberPath="Name" SelectedValuePath="FilePath" VerticalAlignment="Center"/>
-                            <Button Grid.Column="1" Click="RecordProfile_Click" Style="{DynamicResource MaterialDesignOutlinedButton}" Height="32" Padding="8,0" ToolTip="ضبط پروفایل صوتی جدید با میکروفون" Margin="6,0,0,0">
+                            <ComboBox x:Name="VoiceProfileComboBox" Grid.Column="0" 
+                                      Background="#1A2030" Foreground="#F1F5F9" BorderBrush="#26334D"
+                                      Style="{DynamicResource MaterialDesignOutlinedComboBox}" 
+                                      DisplayMemberPath="Name" SelectedValuePath="FilePath" VerticalAlignment="Center" Height="40"/>
+                            <Button Grid.Column="1" Click="RecordProfile_Click" Style="{DynamicResource MacGhostButtonStyle}" Height="38" Padding="10,0" ToolTip="ضبط پروفایل صوتی جدید با میکروفون" Margin="6,0,0,0">
                                 <StackPanel Orientation="Horizontal">
-                                    <materialDesign:PackIcon Kind="Microphone" Width="16" Height="16" VerticalAlignment="Center" Margin="0,0,4,0"/>
-                                    <TextBlock Text="ضبط جدید" FontSize="11" VerticalAlignment="Center"/>
+                                    <materialDesign:PackIcon Kind="Microphone" Width="14" Height="14" Foreground="#A855F7" VerticalAlignment="Center" Margin="0,0,4,0"/>
+                                    <TextBlock Text="ضبط جدید" FontSize="11" Foreground="#F1F5F9" VerticalAlignment="Center"/>
                                 </StackPanel>
                             </Button>
-                            <Button Grid.Column="2" Click="RefreshProfiles_Click" Style="{DynamicResource MaterialDesignIconButton}" ToolTip="به‌روزرسانی لیست گویندگان" Margin="4,0,0,0">
-                                <materialDesign:PackIcon Kind="Refresh" Width="20" Height="20"/>
+                            <Button Grid.Column="2" Click="RefreshProfiles_Click" Style="{DynamicResource MacGhostButtonStyle}" Width="38" Height="38" Padding="0" ToolTip="به‌روزرسانی لیست گویندگان" Margin="4,0,0,0">
+                                <materialDesign:PackIcon Kind="Refresh" Width="16" Height="16" Foreground="#94A3B8"/>
                             </Button>
                         </Grid>
 
-                        <!-- Fine-Tuning Controls -->
-                        <TextBlock Text="۳. تنظیمات دقیق تغییر صدا" FontSize="13" FontWeight="Bold" Foreground="{DynamicResource MaterialDesignBody}" Margin="0,0,0,12"/>
-
-                        <!-- Pitch Shift Slider -->
-                        <Grid Margin="0,0,0,12">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="Auto"/>
-                            </Grid.ColumnDefinitions>
-                            <TextBlock Text="تغییر گام صدا (Pitch Shift):" FontSize="12" Foreground="{DynamicResource MaterialDesignBodyLight}"/>
-                            <TextBlock x:Name="PitchValueText" Grid.Column="1" Text="0 نیم‌گام (طبیعی)" FontSize="12" FontWeight="Bold" Foreground="{DynamicResource PrimaryHueMidBrush}"/>
-                        </Grid>
-                        <Slider x:Name="PitchSlider" Minimum="-12" Maximum="12" Value="0" TickFrequency="1" IsSnapToTickEnabled="True" ValueChanged="PitchSlider_ValueChanged" Margin="0,0,0,16"/>
-
-                        <!-- Accent Retention Slider -->
-                        <Grid Margin="0,0,0,12">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="Auto"/>
-                            </Grid.ColumnDefinitions>
-                            <TextBlock Text="حفظ ریتم و منحنی لحن:" FontSize="12" Foreground="{DynamicResource MaterialDesignBodyLight}"/>
-                            <TextBlock x:Name="AccentValueText" Grid.Column="1" Text="100%" FontSize="12" FontWeight="Bold" Foreground="{DynamicResource PrimaryHueMidBrush}"/>
-                        </Grid>
-                        <Slider x:Name="AccentSlider" Minimum="0" Maximum="100" Value="100" ValueChanged="AccentSlider_ValueChanged" Margin="0,0,0,16"/>
-
-                        <!-- Denoise & Blend Controls -->
-                        <Grid Margin="0,0,0,16">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="Auto"/>
-                            </Grid.ColumnDefinitions>
+                        <!-- 3. Fine-Tuning Controls -->
+                        <Border Background="#161B27" BorderBrush="#26334D" BorderThickness="1" CornerRadius="10" Padding="12" Margin="0,0,0,14">
                             <StackPanel Orientation="Vertical">
-                                <TextBlock Text="کاهش نویز پس‌زمینه (Denoising)" FontSize="12" FontWeight="SemiBold" Foreground="{DynamicResource MaterialDesignBody}"/>
-                                <TextBlock Text="حذف نویز صوتی قبل از تبدیل هوشمند" FontSize="11" Foreground="{DynamicResource MaterialDesignBodyLight}"/>
+                                <TextBlock Text="۳. تنظیمات دقیق تغییر صدا" FontSize="12" FontWeight="Bold" Foreground="#06B6D4" Margin="0,0,0,10"/>
+
+                                <!-- Pitch Shift Slider -->
+                                <Grid Margin="0,0,0,4">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="تغییر گام صدا (Pitch Shift):" FontSize="11" Foreground="#94A3B8"/>
+                                    <TextBlock x:Name="PitchValueText" Grid.Column="1" Text="0 نیم‌گام (طبیعی)" FontSize="11" FontWeight="Bold" Foreground="#A855F7"/>
+                                </Grid>
+                                <Slider x:Name="PitchSlider" Minimum="-12" Maximum="12" Value="0" TickFrequency="1" IsSnapToTickEnabled="True" ValueChanged="PitchSlider_ValueChanged" Margin="0,0,0,10"/>
+
+                                <!-- Accent Retention Slider -->
+                                <Grid Margin="0,0,0,4">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="حفظ ریتم و منحنی لحن:" FontSize="11" Foreground="#94A3B8"/>
+                                    <TextBlock x:Name="AccentValueText" Grid.Column="1" Text="100%" FontSize="11" FontWeight="Bold" Foreground="#06B6D4"/>
+                                </Grid>
+                                <Slider x:Name="AccentSlider" Minimum="0" Maximum="100" Value="100" ValueChanged="AccentSlider_ValueChanged" Margin="0,0,0,10"/>
+
+                                <!-- Denoise Toggle -->
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel Orientation="Vertical">
+                                        <TextBlock Text="کاهش نویز پس‌زمینه (Denoise)" FontSize="11" FontWeight="SemiBold" Foreground="#F1F5F9"/>
+                                        <TextBlock Text="حذف نویز قبل از تبدیل" FontSize="10" Foreground="#94A3B8"/>
+                                    </StackPanel>
+                                    <ToggleButton x:Name="DenoiseToggle" Grid.Column="1" IsChecked="True" Style="{DynamicResource MaterialDesignSwitchToggleButton}" VerticalAlignment="Center"/>
+                                </Grid>
                             </StackPanel>
-                            <ToggleButton x:Name="DenoiseToggle" Grid.Column="1" IsChecked="True" Style="{DynamicResource MaterialDesignSwitchToggleButton}" VerticalAlignment="Center"/>
-                        </Grid>
+                        </Border>
 
                         <!-- Convert Button & Status -->
-                        <Button x:Name="ConvertVoiceBtn" Click="ConvertVoiceBtn_Click" Height="46" Style="{DynamicResource MaterialDesignRaisedButton}" materialDesign:ButtonAssist.CornerRadius="10" Margin="0,8,0,12">
+                        <Button x:Name="ConvertVoiceBtn" Click="ConvertVoiceBtn_Click" Height="44" Style="{DynamicResource MacPillButtonStyle}" Margin="0,0,0,10">
                             <StackPanel Orientation="Horizontal">
-                                <materialDesign:PackIcon Kind="AutoFix" Width="20" Height="20" VerticalAlignment="Center" Margin="0,0,8,0"/>
-                                <TextBlock Text="⚡ شروع تبدیل هوشمند صدا (Convert Voice)" FontSize="13" FontWeight="Bold" VerticalAlignment="Center"/>
+                                <materialDesign:PackIcon Kind="AutoFix" Width="18" Height="18" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                                <TextBlock Text="⚡ شروع تبدیل هوشمند صدا (Convert)" FontSize="13" FontWeight="Bold" VerticalAlignment="Center"/>
                             </StackPanel>
                         </Button>
 
-                        <ProgressBar x:Name="ConvertProgressBar" Height="6" IsIndeterminate="False" Value="0" Margin="0,0,0,8" Visibility="Collapsed"/>
-                        <TextBlock x:Name="StatusText" Text="آماده تبدیل فایل صوتی" FontSize="11" Foreground="{DynamicResource MaterialDesignBodyLight}" TextAlignment="Center"/>
+                        <ProgressBar x:Name="ConvertProgressBar" Height="4" IsIndeterminate="False" Value="0" Margin="0,0,0,6" Visibility="Collapsed" Foreground="#A855F7"/>
+                        <TextBlock x:Name="StatusText" Text="آماده تبدیل فایل صوتی" FontSize="11" Foreground="#94A3B8" TextAlignment="Center"/>
 
                     </StackPanel>
                 </ScrollViewer>
             </Border>
 
-            <!-- ══ Right Panel: Dual A/B Comparison Player ══ -->
+            <!-- ══ Right Panel: Dual Player Studio ══ -->
             <Grid Grid.Column="1">
                 <Grid.RowDefinitions>
-                    <!-- Source Audio Player Card -->
+                    <!-- Source Audio Card (A) -->
                     <RowDefinition Height="*"/>
-                    <!-- Converted Audio Player Card -->
+                    <!-- Converted Audio Card (B) -->
                     <RowDefinition Height="*"/>
                     <!-- Ethical Consent Banner -->
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
 
-                <!-- Source Audio Player Card -->
-                <Border Grid.Row="0" Background="{DynamicResource MaterialDesignCardBackground}" CornerRadius="12" Padding="16" Margin="0,0,0,8">
+                <!-- Source Audio Player Card (A) -->
+                <Border Grid.Row="0" Style="{DynamicResource MacGlassCardStyle}" Padding="16" Margin="0,0,0,8" BorderBrush="#0EA5E9">
                     <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto"/>
@@ -165,40 +172,42 @@
                             <RowDefinition Height="Auto"/>
                         </Grid.RowDefinitions>
 
-                        <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,12">
-                            <materialDesign:PackIcon Kind="MusicNote" Width="20" Height="20" Foreground="{DynamicResource PrimaryHueMidBrush}" VerticalAlignment="Center" Margin="0,0,8,0"/>
-                            <TextBlock Text="فایل صوتی ورودی (Source Audio - A)" FontSize="14" FontWeight="Bold" Foreground="{DynamicResource MaterialDesignBody}"/>
+                        <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,8">
+                            <materialDesign:PackIcon Kind="MusicNote" Width="18" Height="18" Foreground="#0EA5E9" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                            <TextBlock Text="فایل صوتی ورودی (Source Audio - A)" FontSize="13" FontWeight="Bold" Foreground="#F1F5F9"/>
                         </StackPanel>
 
-                        <!-- Source Player View / Info -->
-                        <Border Grid.Row="1" Background="#0AFFFFFF" CornerRadius="8" Padding="12" VerticalAlignment="Center">
-                            <StackPanel Orientation="Vertical" HorizontalAlignment="Center">
-                                <materialDesign:PackIcon Kind="Waveform" Width="48" Height="48" Foreground="{DynamicResource PrimaryHueMidBrush}" HorizontalAlignment="Center" Margin="0,0,0,8"/>
-                                <TextBlock x:Name="SourceAudioInfoText" Text="هیچ فایلی انتخاب نشده است" FontSize="12" Foreground="{DynamicResource MaterialDesignBodyLight}" HorizontalAlignment="Center"/>
-                            </StackPanel>
+                        <!-- Source Waveform Display -->
+                        <Border Grid.Row="1" Background="#161B27" BorderBrush="#26334D" BorderThickness="1" CornerRadius="10" Padding="12" VerticalAlignment="Stretch">
+                            <Grid VerticalAlignment="Center">
+                                <StackPanel Orientation="Vertical" HorizontalAlignment="Center">
+                                    <materialDesign:PackIcon Kind="Waveform" Width="42" Height="42" Foreground="#0EA5E9" HorizontalAlignment="Center" Margin="0,0,0,6"/>
+                                    <TextBlock x:Name="SourceAudioInfoText" Text="هیچ فایلی انتخاب نشده است" FontSize="12" Foreground="#94A3B8" HorizontalAlignment="Center"/>
+                                </StackPanel>
+                            </Grid>
                         </Border>
 
-                        <!-- Source Controls -->
-                        <Grid Grid.Row="2" Margin="0,12,0,0">
+                        <!-- Source Playback Controls -->
+                        <Grid Grid.Row="2" Margin="0,10,0,0">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto"/>
                                 <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="Auto"/>
                             </Grid.ColumnDefinitions>
 
-                            <Button x:Name="SourcePlayBtn" Click="SourcePlayBtn_Click" Style="{DynamicResource MaterialDesignIconButton}" IsEnabled="False">
-                                <materialDesign:PackIcon x:Name="SourcePlayIcon" Kind="Play" Width="24" Height="24"/>
+                            <Button x:Name="SourcePlayBtn" Click="SourcePlayBtn_Click" Style="{DynamicResource MacGhostButtonStyle}" Width="36" Height="36" Padding="0" IsEnabled="False">
+                                <materialDesign:PackIcon x:Name="SourcePlayIcon" Kind="Play" Width="20" Height="20" Foreground="#0EA5E9"/>
                             </Button>
 
-                            <Slider x:Name="SourceSeekSlider" Grid.Column="1" VerticalAlignment="Center" IsEnabled="False" Margin="8,0" ValueChanged="SourceSeekSlider_ValueChanged"/>
+                            <Slider x:Name="SourceSeekSlider" Grid.Column="1" VerticalAlignment="Center" IsEnabled="False" Margin="10,0" ValueChanged="SourceSeekSlider_ValueChanged"/>
 
-                            <TextBlock x:Name="SourceTimeText" Grid.Column="2" Text="00:00 / 00:00" FontSize="11" Foreground="{DynamicResource MaterialDesignBodyLight}" VerticalAlignment="Center"/>
+                            <TextBlock x:Name="SourceTimeText" Grid.Column="2" Text="00:00 / 00:00" FontSize="11" Foreground="#94A3B8" VerticalAlignment="Center"/>
                         </Grid>
                     </Grid>
                 </Border>
 
-                <!-- Converted Audio Player Card -->
-                <Border Grid.Row="1" Background="{DynamicResource MaterialDesignCardBackground}" CornerRadius="12" Padding="16" Margin="0,4,0,8">
+                <!-- Converted Audio Player Card (B) -->
+                <Border Grid.Row="1" Style="{DynamicResource MacGlassCardStyle}" Padding="16" Margin="0,4,0,8" BorderBrush="#10B981">
                     <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto"/>
@@ -206,61 +215,63 @@
                             <RowDefinition Height="Auto"/>
                         </Grid.RowDefinitions>
 
-                        <Grid Grid.Row="0" Margin="0,0,0,12">
+                        <Grid Grid.Row="0" Margin="0,0,0,8">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="Auto"/>
                             </Grid.ColumnDefinitions>
 
                             <StackPanel Orientation="Horizontal">
-                                <materialDesign:PackIcon Kind="AccountVoice" Width="20" Height="20" Foreground="#00E676" VerticalAlignment="Center" Margin="0,0,8,0"/>
-                                <TextBlock Text="صدای خروجی تبدیل‌شده (Converted Audio - B)" FontSize="14" FontWeight="Bold" Foreground="{DynamicResource MaterialDesignBody}"/>
+                                <materialDesign:PackIcon Kind="AccountVoice" Width="18" Height="18" Foreground="#10B981" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                                <TextBlock Text="صدای خروجی تبدیل‌شده (Converted Audio - B)" FontSize="13" FontWeight="Bold" Foreground="#F1F5F9"/>
                             </StackPanel>
 
-                            <Button x:Name="ExportWavBtn" Grid.Column="1" Click="ExportWavBtn_Click" Style="{DynamicResource MaterialDesignOutlinedButton}" Height="30" Padding="10,0" IsEnabled="False">
+                            <Button x:Name="ExportWavBtn" Grid.Column="1" Click="ExportWavBtn_Click" Style="{DynamicResource MacGhostButtonStyle}" Height="30" Padding="12,0" IsEnabled="False">
                                 <StackPanel Orientation="Horizontal">
-                                    <materialDesign:PackIcon Kind="Download" Width="16" Height="16" VerticalAlignment="Center" Margin="0,0,6,0"/>
-                                    <TextBlock Text="ذخیره WAV" FontSize="11"/>
+                                    <materialDesign:PackIcon Kind="Download" Width="14" Height="14" Foreground="#10B981" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                                    <TextBlock Text="ذخیره WAV" FontSize="11" Foreground="#10B981"/>
                                 </StackPanel>
                             </Button>
                         </Grid>
 
-                        <!-- Converted Player View / Info -->
-                        <Border Grid.Row="1" Background="#0AFFFFFF" CornerRadius="8" Padding="12" VerticalAlignment="Center">
-                            <StackPanel Orientation="Vertical" HorizontalAlignment="Center">
-                                <materialDesign:PackIcon x:Name="ConvertedStatusIcon" Kind="Equalizer" Width="48" Height="48" Foreground="{DynamicResource MaterialDesignBodyLight}" HorizontalAlignment="Center" Margin="0,0,0,8"/>
-                                <TextBlock x:Name="ConvertedAudioInfoText" Text="پس از کلیک روی دکمه تبدیل، خروجی در اینجا آماده پخش می‌شود" FontSize="12" Foreground="{DynamicResource MaterialDesignBodyLight}" HorizontalAlignment="Center"/>
-                            </StackPanel>
+                        <!-- Converted Waveform Display -->
+                        <Border Grid.Row="1" Background="#161B27" BorderBrush="#26334D" BorderThickness="1" CornerRadius="10" Padding="12" VerticalAlignment="Stretch">
+                            <Grid VerticalAlignment="Center">
+                                <StackPanel Orientation="Vertical" HorizontalAlignment="Center">
+                                    <materialDesign:PackIcon x:Name="ConvertedStatusIcon" Kind="Equalizer" Width="42" Height="42" Foreground="#94A3B8" HorizontalAlignment="Center" Margin="0,0,0,6"/>
+                                    <TextBlock x:Name="ConvertedAudioInfoText" Text="پس از کلیک روی دکمه تبدیل، خروجی در اینجا آماده پخش می‌شود" FontSize="12" Foreground="#94A3B8" HorizontalAlignment="Center"/>
+                                </StackPanel>
+                            </Grid>
                         </Border>
 
-                        <!-- Converted Controls -->
-                        <Grid Grid.Row="2" Margin="0,12,0,0">
+                        <!-- Converted Playback Controls -->
+                        <Grid Grid.Row="2" Margin="0,10,0,0">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto"/>
                                 <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="Auto"/>
                             </Grid.ColumnDefinitions>
 
-                            <Button x:Name="ConvertedPlayBtn" Click="ConvertedPlayBtn_Click" Style="{DynamicResource MaterialDesignIconButton}" IsEnabled="False">
-                                <materialDesign:PackIcon x:Name="ConvertedPlayIcon" Kind="Play" Width="24" Height="24"/>
+                            <Button x:Name="ConvertedPlayBtn" Click="ConvertedPlayBtn_Click" Style="{DynamicResource MacGhostButtonStyle}" Width="36" Height="36" Padding="0" IsEnabled="False">
+                                <materialDesign:PackIcon x:Name="ConvertedPlayIcon" Kind="Play" Width="20" Height="20" Foreground="#10B981"/>
                             </Button>
 
-                            <Slider x:Name="ConvertedSeekSlider" Grid.Column="1" VerticalAlignment="Center" IsEnabled="False" Margin="8,0" ValueChanged="ConvertedSeekSlider_ValueChanged"/>
+                            <Slider x:Name="ConvertedSeekSlider" Grid.Column="1" VerticalAlignment="Center" IsEnabled="False" Margin="10,0" ValueChanged="ConvertedSeekSlider_ValueChanged"/>
 
-                            <TextBlock x:Name="ConvertedTimeText" Grid.Column="2" Text="00:00 / 00:00" FontSize="11" Foreground="{DynamicResource MaterialDesignBodyLight}" VerticalAlignment="Center"/>
+                            <TextBlock x:Name="ConvertedTimeText" Grid.Column="2" Text="00:00 / 00:00" FontSize="11" Foreground="#94A3B8" VerticalAlignment="Center"/>
                         </Grid>
                     </Grid>
                 </Border>
 
                 <!-- Ethical Consent Banner -->
-                <Border Grid.Row="2" Background="#0DFFB74D" BorderBrush="#FFB74D" BorderThickness="1" CornerRadius="8" Padding="12,8" Margin="0,4,0,0">
+                <Border Grid.Row="2" Background="#161B27" BorderBrush="#F59E0B" BorderThickness="1" CornerRadius="10" Padding="12,8" Margin="0,4,0,0">
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
-                        <materialDesign:PackIcon Kind="AlertCircleOutline" Width="18" Height="18" Foreground="#FFB74D" VerticalAlignment="Center" Margin="0,0,8,0"/>
-                        <TextBlock Grid.Column="1" Text="بیانیه اخلاقی: استفاده از سیستم شبیه‌سازی صدا تنها با رضایت صاحبان گوینده مجاز می‌باشد." FontSize="11" Foreground="{DynamicResource MaterialDesignBody}" VerticalAlignment="Center"/>
+                        <materialDesign:PackIcon Kind="AlertCircleOutline" Width="16" Height="16" Foreground="#F59E0B" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                        <TextBlock Grid.Column="1" Text="بیانیه اخلاقی: استفاده از سیستم شبیه‌سازی صدا تنها با رضایت صاحبان گوینده مجاز می‌باشد." FontSize="11" Foreground="#F1F5F9" VerticalAlignment="Center"/>
                     </Grid>
                 </Border>
             </Grid>

@@ -27,8 +27,8 @@
                     <StackPanel Orientation="Horizontal" Margin="0,0,0,2">
                         <materialDesign:PackIcon Kind="RecordRec" Width="24" Height="24" Foreground="#A855F7" VerticalAlignment="Center" Margin="0,0,8,0"/>
                         <TextBlock Text="{DynamicResource Tab_V2V_Title}" FontSize="18" FontWeight="Bold" Foreground="#F1F5F9" VerticalAlignment="Center"/>
-                        <Border Background="#F59E0B" CornerRadius="4" Padding="6,2" Margin="8,0,0,0" VerticalAlignment="Center" ToolTip="بخش آزمایشگاهی (در حال توسعه و تکمیل)">
-                            <TextBlock Text="BETA" FontSize="10" FontWeight="Black" Foreground="#000000"/>
+                        <Border Background="#10B981" CornerRadius="4" Padding="6,2" Margin="8,0,0,0" VerticalAlignment="Center" ToolTip="موتور تبدیل صدای هوش مصنوعی ارتقایافته v3.0">
+                            <TextBlock Text="NEURAL v2" FontSize="10" FontWeight="Black" Foreground="#FFFFFF"/>
                         </Border>
                     </StackPanel>
                     <TextBlock Text="{DynamicResource Tab_V2V_SubTitle}" FontSize="12" Foreground="#94A3B8" Margin="32,0,0,0"/>

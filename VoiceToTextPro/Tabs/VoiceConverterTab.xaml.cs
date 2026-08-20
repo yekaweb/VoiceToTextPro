@@ -187,6 +187,13 @@ namespace VoiceToTextPro.Tabs
             bool denoise = DenoiseToggle.IsChecked ?? true;
             float blendRatio = (float)(AccentSlider.Value / 100.0);
 
+            // Read selected engine mode
+            V2VEngineMode engineMode = V2VEngineMode.Auto;
+            if (EngineModeComboBox.SelectedItem is ComboBoxItem item && item.Tag is string tagStr)
+            {
+                Enum.TryParse(tagStr, out engineMode);
+            }
+
             ConvertVoiceBtn.IsEnabled = false;
             ConvertProgressBar.Visibility = Visibility.Visible;
             ConvertProgressBar.Value = 10;
@@ -199,7 +206,8 @@ namespace VoiceToTextPro.Tabs
                     outputWavPath: "",
                     pitchShift: pitchShift,
                     denoise: denoise,
-                    blendRatio: blendRatio
+                    blendRatio: blendRatio,
+                    engineMode: engineMode
                 );
 
                 _convertedAudioPath = resultWav;

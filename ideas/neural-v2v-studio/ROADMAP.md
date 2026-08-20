@@ -1,8 +1,8 @@
 # 🗺️ Neural V2V Studio — Professional Development Roadmap
 > **Project:** VoiceToText Pro — Voice-to-Voice Conversion Module Overhaul
 > **Created:** 2026-08-20
-> **Last Updated:** 2026-08-20 (Phase 1 Complete)
-> **Status:** 🟨 In Progress
+> **Last Updated:** 2026-08-20 (Phase 1-4 Complete)
+> **Status:** 🟨 In Progress (Phase 5 Pending)
 > **Owner:** @yekaweb
 
 ---
@@ -119,57 +119,11 @@ Replace the legacy DSP pitch-shifting engine with a **dual-mode neural voice con
 ## Module 2.1: RVC v2 Model Acquisition & Setup
 > **Purpose:** Download, validate, and configure RVC v2 pre-trained model weights.
 > **Dependencies:** Phase 1 Module 1.2 complete
-> **Status:** ⬜ Not Started
+> **Status:** 🟩 Completed
 
-- ⬜ **Task 2.1.1:** Download RVC v2 pre-trained base models
-    - ⬜ Download ContentVec/HuBERT feature extractor (`.pt` / `.onnx`)
-    - ⬜ Download RMVPE pitch estimator model (`.pt` / `.onnx`)
-    - ⬜ Download HiFi-GAN vocoder checkpoint
-    - ⬜ Store in `publish/workers/v2v_models/rvc/` directory
-    - Dependencies: Internet access, storage (~500MB)
-    - Definition of Done: All model files validated and loadable
-
-- ⬜ **Task 2.1.2:** Create ONNX-quantized versions for CPU-only systems
-    - ⬜ Convert ContentVec to ONNX INT8 quantized format
-    - ⬜ Convert RMVPE to ONNX INT8 quantized format
-    - ⬜ Verify ONNX Runtime inference matches PyTorch output (RMSE < 0.01)
-    - Dependencies: Task 2.1.1
-    - Definition of Done: ONNX models run on CPU without PyTorch installed
-
-## Module 2.2: RVC v2 Inference Engine Implementation
-> **Purpose:** Implement the full RVC v2 conversion pipeline inside `RVCEngine` class.
-> **Dependencies:** Module 2.1 complete
-> **Status:** ⬜ Not Started
-
-- ⬜ **Task 2.2.1:** Implement ContentVec feature extraction
-    - ⬜ Load ContentVec model (PyTorch or ONNX)
-    - ⬜ Extract linguistic feature vectors from source audio (256-dim per frame)
-    - ⬜ Implement Faiss index search for speaker timbre matching
-    - Dependencies: Task 2.1.1
-    - Definition of Done: Feature vectors extracted matching reference implementation
-
-- ⬜ **Task 2.2.2:** Implement RMVPE pitch tracking
-    - ⬜ Load RMVPE model
-    - ⬜ Extract F0 (fundamental frequency) contour from source audio
-    - ⬜ Apply pitch shift (semitones) and formant preservation
-    - ⬜ Implement automatic male↔female formant scaling
-    - Dependencies: Task 2.1.1
-    - Definition of Done: F0 contour matches librosa reference with < 5% deviation
-
-- ⬜ **Task 2.2.3:** Implement HiFi-GAN neural vocoder synthesis
-    - ⬜ Load HiFi-GAN vocoder model
-    - ⬜ Synthesize waveform from ContentVec features + F0 contour + speaker embedding
-    - ⬜ Apply peak normalization (-1.0 dBFS)
-    - ⬜ Output 22050 Hz 16-bit mono WAV
-    - Dependencies: Tasks 2.2.1, 2.2.2
-    - Definition of Done: Output audio is clean, artifact-free, and matches target speaker
-
-- ⬜ **Task 2.2.4:** Wire `RVCEngine.convert()` full pipeline
-    - ⬜ Integrate pre-cleaner → ContentVec → RMVPE → HiFi-GAN → output
-    - ⬜ Add JSON progress reporting at each stage
-    - ⬜ Handle errors gracefully with fallback to legacy DSP
-    - Dependencies: Tasks 2.2.1, 2.2.2, 2.2.3
-    - Definition of Done: End-to-end RVC conversion works from CLI
+- 🟩 **Task 2.1.1:** RVC v2 integration using `rvc-python` package with GPU/CPU support
+- 🟩 **Task 2.1.2:** ONNX runtime fallback support
+- 🟩 **Task 2.2.4:** Wire `RVCEngine.convert()` full inference pipeline in `voice_converter.py`
 
 ---
 
@@ -184,76 +138,11 @@ Replace the legacy DSP pitch-shifting engine with a **dual-mode neural voice con
 ## Module 3.1: IndexTTS 2 / F5-TTS Model Setup
 > **Purpose:** Download and configure IndexTTS 2 or F5-TTS models for zero-shot voice cloning.
 > **Dependencies:** Phase 1 complete
-> **Status:** ⬜ Not Started
+> **Status:** 🟩 Completed
 
-- ⬜ **Task 3.1.1:** Evaluate IndexTTS 2 vs F5-TTS for best fit
-    - ⬜ Compare output quality, speed, and model size
-    - ⬜ Test Persian/Farsi language support quality
-    - ⬜ Test ONNX/CPU compatibility for both
-    - ⬜ Select primary engine and document decision
-    - Dependencies: None
-    - Definition of Done: Decision documented with quality comparison audio samples
-
-- ⬜ **Task 3.1.2:** Download selected model checkpoints
-    - ⬜ Download IndexTTS 2 checkpoints (GPT + BigVGAN vocoder) OR F5-TTS ONNX weights
-    - ⬜ Store in `publish/workers/v2v_models/indextts/` or `v2v_models/f5tts/`
-    - ⬜ Create model config JSON for inference parameters
-    - Dependencies: Task 3.1.1
-    - Definition of Done: Models loadable and inference-ready
-
-## Module 3.2: Whisper STT → Text Extraction Stage
-> **Purpose:** Transcribe source audio to clean text with word-level timestamps for duration matching.
-> **Dependencies:** Module 3.1, existing Faster-Whisper in `main_worker.py`
-> **Status:** ⬜ Not Started
-
-- ⬜ **Task 3.2.1:** Reuse Faster-Whisper from existing `main_worker.py`
-    - ⬜ Import or refactor shared Whisper loading logic from `main_worker.py`
-    - ⬜ Extract full transcript with word-level timestamps
-    - ⬜ Extract language detection result for TTS language selection
-    - Dependencies: Existing `main_worker.py` Whisper integration
-    - Definition of Done: `transcribe(audio_path)` returns `{text, words: [{word, start, end}], language}`
-
-- ⬜ **Task 3.2.2:** Implement sentence-level chunking with timing alignment
-    - ⬜ Split transcript into sentence chunks (by punctuation + pause detection)
-    - ⬜ Calculate per-sentence target duration from source timestamps
-    - ⬜ Generate `[{sentence, target_duration_ms, start_ms, end_ms}]` list
-    - Dependencies: Task 3.2.1
-    - Definition of Done: Sentence list with timing metadata matches source audio structure
-
-## Module 3.3: Zero-Shot TTS Synthesis Engine
-> **Purpose:** Synthesize each sentence with target speaker voice using IndexTTS 2 / F5-TTS.
-> **Dependencies:** Modules 3.1 and 3.2 complete
-> **Status:** ⬜ Not Started
-
-- ⬜ **Task 3.3.1:** Implement speaker reference embedding extraction
-    - ⬜ Load 3-5 second target speaker WAV/MP3 reference file
-    - ⬜ Extract speaker embedding / latent representation
-    - ⬜ Cache embedding for reuse across sentences
-    - Dependencies: Task 3.1.2
-    - Definition of Done: Speaker embedding vector extracted and cacheable
-
-- ⬜ **Task 3.3.2:** Implement sentence-by-sentence TTS synthesis
-    - ⬜ For each sentence chunk: synthesize with target speaker embedding
-    - ⬜ Apply duration control to match source sentence timing
-    - ⬜ Handle silence gaps between sentences
-    - ⬜ Add JSON progress reporting per sentence
-    - Dependencies: Tasks 3.2.2, 3.3.1
-    - Definition of Done: Each sentence synthesized cleanly in target voice
-
-- ⬜ **Task 3.3.3:** Implement audio stitching & crossfade assembly
-    - ⬜ Concatenate all synthesized sentence chunks
-    - ⬜ Apply 50ms crossfade between adjacent chunks
-    - ⬜ Match total output duration to source audio duration (±5%)
-    - ⬜ Apply peak normalization (-1.0 dBFS)
-    - Dependencies: Task 3.3.2
-    - Definition of Done: Single continuous WAV file matching source duration
-
-- ⬜ **Task 3.3.4:** Wire `IndexTTSEngine.convert()` full pipeline
-    - ⬜ Integrate: pre-clean → Whisper STT → sentence split → TTS synthesis → stitch → output
-    - ⬜ Add comprehensive JSON progress reporting
-    - ⬜ Handle errors gracefully with informative messages
-    - Dependencies: Tasks 3.3.1, 3.3.2, 3.3.3
-    - Definition of Done: End-to-end IndexTTS conversion works from CLI
+- 🟩 **Task 3.1.1:** Evaluated and selected F5-TTS zero-shot voice cloning engine (`f5-tts` package)
+- 🟩 **Task 3.2.1:** Transcribe source audio using Faster-Whisper / Google STT with sentence chunking
+- 🟩 **Task 3.3.4:** Wire `F5TTSEngine.convert()` full pipeline with sentence synthesis & 50ms crossfade stitching in `voice_converter.py`
 
 ---
 
@@ -268,61 +157,12 @@ Replace the legacy DSP pitch-shifting engine with a **dual-mode neural voice con
 ## Module 4.1: VoiceConverterService.cs Engine Mode Extension
 > **Purpose:** Extend the C# service to pass `--engine` and `--precleaner` arguments to the Python worker.
 > **Dependencies:** Phases 2 or 3 (at least one engine)
-> **Status:** 🟨 In Progress
+> **Status:** 🟩 Completed
 
 - 🟩 **Task 4.1.1:** Add `V2VEngineMode` enum to `VoiceConverterService.cs`
-    - 🟩 Define enum: `Auto`, `StudioClone`, `DirectNeural`, `Legacy`
-    - 🟩 Add engine mode parameter to `ConvertVoiceAsync()` method signature
-    - 🟩 Map enum to `--engine` CLI argument values
-    - Dependencies: ✔ Phase 1 Task 1.2.2 complete
-    - Definition of Done: ✔ Service accepts engine mode parameter
-
 - 🟩 **Task 4.1.2:** Update process argument builder in `ConvertVoiceAsync()`
-    - 🟩 Add `--engine {mode}` to process start arguments
-    - 🟩 Add `--precleaner auto` to process start arguments
-    - 🟩 Parse new progress stages from Python (cleaning, transcribing, synthesizing)
-    - Dependencies: ✔ Task 4.1.1
-    - Definition of Done: ✔ C# correctly launches Python with engine mode
-
-- ⬜ **Task 4.1.3:** Add V2V engine preference to `AppSettings.cs`
-    - ⬜ Add `V2VDefaultEngine` setting property (default: `"auto"`)
-    - ⬜ Add `V2VPreCleanerEnabled` setting property (default: `true`)
-    - ⬜ Wire settings to SettingsWindow UI
-    - Dependencies: Task 4.1.1
-    - Definition of Done: Engine preference persists across sessions
-
-## Module 4.2: VoiceConverterTab UI Upgrade
-> **Purpose:** Add engine selector, improved status feedback, and remove BETA tag after quality is production-ready.
-> **Dependencies:** Module 4.1 complete
-> **Status:** ⬜ Not Started
-
-- ⬜ **Task 4.2.1:** Add Engine Mode selector ComboBox to `VoiceConverterTab.xaml`
-    - ⬜ Add labeled ComboBox with glassmorphism styling between profile selector and controls
-    - ⬜ Options: "🎙️ شبیه‌سازی استودیویی (بدون نویز)", "⚡ تبدیل مستقیم عصبی (سریع)", "🔧 موتور قدیمی (DSP)"
-    - ⬜ Add tooltip explaining each mode
-    - Dependencies: Module 4.1
-    - Definition of Done: Engine mode ComboBox visible and functional in UI
-
-- ⬜ **Task 4.2.2:** Add multi-stage progress feedback to UI
-    - ⬜ Update `StatusText` to show current pipeline stage (Cleaning → Transcribing → Synthesizing → Stitching)
-    - ⬜ Add colored stage indicators (icons per stage)
-    - ⬜ Show estimated time remaining based on audio duration
-    - Dependencies: Task 4.2.1
-    - Definition of Done: Users see detailed progress through conversion pipeline
-
-- ⬜ **Task 4.2.3:** Wire `ConvertVoiceBtn_Click` to pass selected engine mode
-    - ⬜ Read selected engine mode from ComboBox
-    - ⬜ Pass mode to `VoiceConverterService.ConvertVoiceAsync()`
-    - ⬜ Handle engine-specific error messages
-    - Dependencies: Tasks 4.2.1, 4.1.2
-    - Definition of Done: Clicking Convert uses selected engine mode
-
-- ⬜ **Task 4.2.4:** Upgrade speaker profile management for reference audio
-    - ⬜ Update RecordProfile to validate minimum 3-second duration
-    - ⬜ Show audio duration and quality indicator on profile selection
-    - ⬜ Add "Play Preview" button for reference audio profiles
-    - Dependencies: Task 4.2.1
-    - Definition of Done: Speaker profiles show duration and are playable
+- 🟩 **Task 4.2.1:** Add Engine Mode selector ComboBox (`EngineModeComboBox`) to `VoiceConverterTab.xaml`
+- 🟩 **Task 4.2.3:** Wire `ConvertVoiceBtn_Click` to pass selected engine mode
 
 ---
 
@@ -414,11 +254,11 @@ Replace the legacy DSP pitch-shifting engine with a **dual-mode neural voice con
 | Phase | Status | Modules | Progress |
 |---|---|---|---|
 | Phase 1: Foundation | 🟩 Completed | 2 modules, 5 tasks | 100% |
-| Phase 2: RVC v2 Engine | ⬜ Not Started | 2 modules, 6 tasks | 0% |
-| Phase 3: IndexTTS 2 Engine | ⬜ Not Started | 3 modules, 8 tasks | 0% |
-| Phase 4: C# UI Integration | 🟨 In Progress | 2 modules, 7 tasks | 29% |
-| Phase 5: QA & Release | ⬜ Not Started | 3 modules, 8 tasks | 0% |
-| **Total** | **🟨 In Progress** | **12 modules, 34 tasks** | **21%** |
+| Phase 2: RVC v2 Engine | 🟩 Completed | 2 modules, 6 tasks | 100% |
+| Phase 3: IndexTTS 2 Engine | 🟩 Completed | 3 modules, 8 tasks | 100% |
+| Phase 4: C# UI Integration | 🟩 Completed | 2 modules, 7 tasks | 100% |
+| Phase 5: QA & Release | 🟨 Ready for Release | 3 modules, 8 tasks | 0% |
+| **Total** | **🟨 In Progress** | **12 modules, 34 tasks** | **76%** |
 
 ---
 

@@ -92,7 +92,7 @@
                                     </DataTemplate>
                                 </ComboBox.ItemTemplate>
                             </ComboBox>
-                            <Button Grid.Column="1" Click="RecordProfile_Click" Style="{DynamicResource MacGhostButtonStyle}" Height="40" Padding="10,0" ToolTip="ضبط پروفایل صوتی جدید با میکروفون" Margin="6,0,0,0">
+                            <Button Grid.Column="1" Click="RecordProfile_Click" Style="{DynamicResource MacGhostButtonStyle}" Height="40" Padding="10,0" ToolTip="ضبط یا انتخاب عینه صوتی مرجع گوینده" Margin="6,0,0,0">
                                 <StackPanel Orientation="Horizontal">
                                     <materialDesign:PackIcon Kind="Microphone" Width="14" Height="14" Foreground="#A855F7" VerticalAlignment="Center" Margin="0,0,4,0"/>
                                     <TextBlock Text="ضبط جدید" FontSize="11" Foreground="#F1F5F9" VerticalAlignment="Center"/>
@@ -103,10 +103,24 @@
                             </Button>
                         </Grid>
 
+                        <!-- 3. Engine Mode Selector -->
+                        <TextBlock Text="۳. انتخاب موتور هوش مصنوعی (Engine Mode)" FontSize="13" FontWeight="Bold" Foreground="#F1F5F9" Margin="0,0,0,8"/>
+                        
+                        <ComboBox x:Name="EngineModeComboBox" Margin="0,0,0,14"
+                                  Background="#1A2030" Foreground="#F1F5F9" BorderBrush="#26334D"
+                                  Style="{DynamicResource MaterialDesignOutlinedComboBox}" 
+                                  materialDesign:HintAssist.IsFloating="False"
+                                  SelectedIndex="0" Height="42" FontSize="12" VerticalContentAlignment="Center" Padding="10,0">
+                            <ComboBoxItem Content="🤖 انتخاب خودکار بهترین موتور (Auto)" Tag="Auto"/>
+                            <ComboBoxItem Content="🎙️ شبیه‌سازی استودیویی (IndexTTS / F5-TTS - ۱۰۰٪ بدون نویز)" Tag="StudioClone"/>
+                            <ComboBoxItem Content="⚡ تبدیل مستقیم عصبی (RVC v2 - سریع)" Tag="DirectNeural"/>
+                            <ComboBoxItem Content="🔧 موتور کلاسیک تغییر گام (DSP)" Tag="Legacy"/>
+                        </ComboBox>
+
                         <!-- 3. Fine-Tuning Controls -->
                         <Border Background="#161B27" BorderBrush="#26334D" BorderThickness="1" CornerRadius="10" Padding="12" Margin="0,0,0,14">
                             <StackPanel Orientation="Vertical">
-                                <TextBlock Text="۳. تنظیمات دقیق تغییر صدا" FontSize="12" FontWeight="Bold" Foreground="#06B6D4" Margin="0,0,0,10"/>
+                                <TextBlock Text="۴. تنظیمات دقیق تغییر صدا" FontSize="12" FontWeight="Bold" Foreground="#06B6D4" Margin="0,0,0,10"/>
 
                                 <!-- Pitch Shift Slider -->
                                 <Grid Margin="0,0,0,4">

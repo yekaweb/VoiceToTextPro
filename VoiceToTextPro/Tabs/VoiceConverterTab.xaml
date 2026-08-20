@@ -71,37 +71,61 @@
                             </StackPanel>
                         </Border>
 
-                        <!-- 2. Target Voice Speaker Profile -->
-                        <TextBlock Text="۲. انتخاب گوینده هدف (Target Voice)" FontSize="13" FontWeight="Bold" Foreground="#F1F5F9" Margin="0,0,0,8"/>
-                        
-                        <Grid Margin="0,0,0,14">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="Auto"/>
-                                <ColumnDefinition Width="Auto"/>
-                            </Grid.ColumnDefinitions>
-                            <ComboBox x:Name="VoiceProfileComboBox" Grid.Column="0" 
-                                      Background="#1A2030" Foreground="#F1F5F9" BorderBrush="#26334D"
-                                      Style="{DynamicResource MaterialDesignOutlinedComboBox}" 
-                                      materialDesign:HintAssist.IsFloating="False"
-                                      SelectedValuePath="FilePath" VerticalAlignment="Center" 
-                                      VerticalContentAlignment="Center" Padding="10,0" Height="42" FontSize="12">
-                                <ComboBox.ItemTemplate>
-                                    <DataTemplate>
-                                        <TextBlock Text="{Binding Name}" Foreground="#F1F5F9" FontSize="12" VerticalAlignment="Center" Padding="0,2"/>
-                                    </DataTemplate>
-                                </ComboBox.ItemTemplate>
-                            </ComboBox>
-                            <Button Grid.Column="1" Click="RecordProfile_Click" Style="{DynamicResource MacGhostButtonStyle}" Height="40" Padding="10,0" ToolTip="ضبط یا انتخاب عینه صوتی مرجع گوینده" Margin="6,0,0,0">
-                                <StackPanel Orientation="Horizontal">
-                                    <materialDesign:PackIcon Kind="Microphone" Width="14" Height="14" Foreground="#A855F7" VerticalAlignment="Center" Margin="0,0,4,0"/>
-                                    <TextBlock Text="ضبط جدید" FontSize="11" Foreground="#F1F5F9" VerticalAlignment="Center"/>
-                                </StackPanel>
-                            </Button>
-                            <Button Grid.Column="2" Click="RefreshProfiles_Click" Style="{DynamicResource MacGhostButtonStyle}" Width="40" Height="40" Padding="0" ToolTip="به‌روزرسانی لیست گویندگان" Margin="4,0,0,0">
-                                <materialDesign:PackIcon Kind="Refresh" Width="16" Height="16" Foreground="#94A3B8"/>
-                            </Button>
-                        </Grid>
+                        <!-- 2. Target Voice Speaker Profile / Reference Audio Sample -->
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+                            <materialDesign:PackIcon Kind="AccountVoice" Width="18" Height="18" Foreground="#A855F7" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                            <TextBlock Text="۲. عینه صدای مرجع گوینده هدف (Reference Voice)" FontSize="13" FontWeight="Bold" Foreground="#F1F5F9" VerticalAlignment="Center"/>
+                        </StackPanel>
+
+                        <!-- Dedicated Reference Audio Upload Card -->
+                        <Border Background="#161B27" BorderBrush="#26334D" BorderThickness="1" CornerRadius="10" Padding="12" Margin="0,0,0,14">
+                            <StackPanel Orientation="Vertical">
+                                <Grid Margin="0,0,0,8">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    
+                                    <ComboBox x:Name="VoiceProfileComboBox" Grid.Column="0" 
+                                              Background="#1A2030" Foreground="#F1F5F9" BorderBrush="#26334D"
+                                              Style="{DynamicResource MaterialDesignOutlinedComboBox}" 
+                                              materialDesign:HintAssist.IsFloating="False"
+                                              SelectedValuePath="FilePath" VerticalAlignment="Center" 
+                                              VerticalContentAlignment="Center" Padding="10,0" Height="42" FontSize="12"
+                                              SelectionChanged="VoiceProfileComboBox_SelectionChanged">
+                                        <ComboBox.ItemTemplate>
+                                            <DataTemplate>
+                                                <TextBlock Text="{Binding Name}" Foreground="#F1F5F9" FontSize="12" VerticalAlignment="Center" Padding="0,2"/>
+                                            </DataTemplate>
+                                        </ComboBox.ItemTemplate>
+                                    </ComboBox>
+                                    
+                                    <Button Grid.Column="1" Click="RecordProfile_Click" Style="{DynamicResource MacPillButtonStyle}" Height="40" Padding="12,0" ToolTip="انتخاب فایل نمونه صدای مرجع گوینده (۳ الی ۱۰ ثانیه‌ای)" Margin="6,0,0,0">
+                                        <StackPanel Orientation="Horizontal">
+                                            <materialDesign:PackIcon Kind="FileUpload" Width="16" Height="16" Foreground="#FFFFFF" VerticalAlignment="Center" Margin="0,0,4,0"/>
+                                            <TextBlock Text="➕ نمونه جدید" FontSize="11" FontWeight="Bold" Foreground="#FFFFFF" VerticalAlignment="Center"/>
+                                        </StackPanel>
+                                    </Button>
+                                    
+                                    <Button Grid.Column="2" Click="RefreshProfiles_Click" Style="{DynamicResource MacGhostButtonStyle}" Width="40" Height="40" Padding="0" ToolTip="به‌روزرسانی لیست" Margin="4,0,0,0">
+                                        <materialDesign:PackIcon Kind="Refresh" Width="16" Height="16" Foreground="#94A3B8"/>
+                                    </Button>
+                                </Grid>
+
+                                <!-- Active Reference Voice Status -->
+                                <Border Background="#0F172A" CornerRadius="6" Padding="8,6">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <materialDesign:PackIcon Kind="CheckCircleOutline" Width="14" Height="14" Foreground="#10B981" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                                        <TextBlock x:Name="SelectedProfileInfoText" Grid.Column="1" Text="گوینده فعال: انتخاب فرمایید" FontSize="11" Foreground="#94A3B8" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"/>
+                                    </Grid>
+                                </Border>
+                            </StackPanel>
+                        </Border>
 
                         <!-- 3. Engine Mode Selector -->
                         <TextBlock Text="۳. انتخاب موتور هوش مصنوعی (Engine Mode)" FontSize="13" FontWeight="Bold" Foreground="#F1F5F9" Margin="0,0,0,8"/>

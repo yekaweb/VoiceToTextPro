@@ -72,6 +72,14 @@ namespace VoiceToTextPro.Tabs
             }
         }
 
+        private void VoiceProfileComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (VoiceProfileComboBox.SelectedItem is VoiceProfileInfo profile)
+            {
+                SelectedProfileInfoText.Text = $"صدای مرجع گوینده فعال: {profile.Name} ({profile.Language})";
+            }
+        }
+
         private void RefreshProfiles_Click(object sender, RoutedEventArgs e)
         {
             LoadVoiceProfiles();
